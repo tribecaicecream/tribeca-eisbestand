@@ -6,23 +6,22 @@
 <meta name="theme-color" content="#f6f1e8">
 <title>Tribeca Eisbestand</title>
 <style>
-:root{--bg:#f6f1e8;--card:#fffdf9;--line:#e5dccf;--text:#151515;--muted:#6c675f;--green:#2f7d32;--red:#b94132;--yellow:#fff3c8}
-*{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}
-.app{max-width:860px;margin:auto;padding-bottom:92px} header{position:sticky;top:0;z-index:10;background:#f6f1e8ee;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:14px}
-.brand{display:flex;align-items:center;justify-content:space-between;gap:10px} h1{font-size:21px;margin:0} .cloud{font-size:13px;font-weight:700;color:var(--muted)}
-.tabs{display:flex;gap:8px;overflow:auto;margin-top:12px} .tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;white-space:nowrap} .tab.active{background:#111;color:#fff}
-main{padding:12px} .panel{display:none} .panel.active{display:block} .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+:root{--bg:#f6f1e8;--card:#fffdf9;--line:#e5dccf;--text:#151515;--muted:#6c675f;--green:#2f7d32;--red:#b94132;--yellow:#fff3c8;--orange:#b66b16}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}
+.app{max-width:860px;margin:auto;padding-bottom:130px}header{position:sticky;top:0;z-index:10;background:#f6f1e8ee;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:14px}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:10px}h1{font-size:21px;margin:0}.cloud{font-size:13px;font-weight:700;color:var(--muted)}
+.tabs{display:flex;gap:8px;overflow:auto;margin-top:12px}.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;white-space:nowrap}.tab.active{background:#111;color:#fff}
+main{padding:12px}.panel{display:none}.panel.active{display:block}.toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 select,input{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:16px}
-.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0} .metric{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px} .metric small{color:var(--muted)} .metric b{display:block;font-size:23px;margin-top:4px}
-.list{display:grid;gap:7px} .row{display:grid;grid-template-columns:minmax(0,1fr) 48px 68px 48px;gap:7px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:13px;padding:8px 9px}
-.name{font-size:14px;font-weight:650;line-height:1.15} button{touch-action:manipulation} .step{height:44px;border:0;border-radius:11px;font-size:25px;font-weight:700} .minus{background:#eee5da} .plus{background:var(--green);color:#fff}
-.qty{height:44px;border-radius:11px;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800}
-footer{position:fixed;bottom:0;left:0;right:0;background:#f6f1e8ee;backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:20}
-.foot{max-width:860px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:10px} .save{border:0;background:#111;color:#fff;border-radius:13px;padding:13px 16px;font-weight:800}
-.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px} .hist{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
-.small{font-size:12px;color:var(--muted)} .ok{color:var(--green)} .err{color:var(--red)} .loading{opacity:.6;pointer-events:none}
-table{width:100%;border-collapse:collapse} th,td{padding:8px 5px;border-bottom:1px solid var(--line);text-align:left;font-size:13px} th{color:var(--muted)}
-@media(max-width:520px){.summary{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.row{grid-template-columns:minmax(0,1fr) 44px 62px 44px;gap:5px}}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.metric{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.metric small{color:var(--muted)}.metric b{display:block;font-size:23px;margin-top:4px}
+.completion{border-radius:14px;padding:13px 14px;margin:10px 0;font-weight:750;border:1px solid var(--line)}.completion.open{background:#fff4df;color:#8d5415}.completion.done{background:#e8f3e7;color:#25682a}
+.list{display:grid;gap:7px}.row{display:grid;grid-template-columns:minmax(0,1fr) 48px 68px 48px;gap:7px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:13px;padding:8px 9px}.name{font-size:14px;font-weight:650;line-height:1.15}
+button{touch-action:manipulation}.step{height:44px;border:0;border-radius:11px;font-size:25px;font-weight:700}.minus{background:#eee5da}.plus{background:var(--green);color:#fff}.qty{height:44px;border-radius:11px;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800}
+footer{position:fixed;bottom:0;left:0;right:0;background:#f6f1e8ee;backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:20}.foot{max-width:860px;margin:auto;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px}.btn{border:0;border-radius:13px;padding:13px 14px;font-weight:800}.save{background:#111;color:#fff}.complete{background:var(--green);color:#fff}.complete.done{background:#dfe9df;color:#557057}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}.hist{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.small{font-size:12px;color:var(--muted)}.ok{color:var(--green)}.err{color:var(--red)}.warn{color:var(--orange)}
+.status-pill{display:inline-block;padding:5px 8px;border-radius:999px;font-size:12px;font-weight:800}.status-pill.done{background:#e8f3e7;color:#25682a}.status-pill.open{background:#fff0dd;color:#9a5a15}
+table{width:100%;border-collapse:collapse}th,td{padding:8px 5px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{color:var(--muted)}
+@media(max-width:640px){.summary{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.row{grid-template-columns:minmax(0,1fr) 44px 62px 44px;gap:5px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 9px;font-size:13px}}
 </style>
 </head>
 <body>
@@ -37,10 +36,8 @@ table{width:100%;border-collapse:collapse} th,td{padding:8px 5px;border-bottom:1
 </header>
 <main>
 <section id="entry" class="panel active">
-  <div class="toolbar">
-    <select id="store"></select>
-    <input id="date" type="date">
-  </div>
+  <div class="toolbar"><select id="store"></select><input id="date" type="date"></div>
+  <div id="completionState" class="completion open">⚠ Abendinventur noch nicht abgeschlossen</div>
   <div class="summary">
     <div class="metric"><small>Behälter</small><b id="sumContainers">0,0</b></div>
     <div class="metric"><small>kg</small><b id="sumKg">0,0</b></div>
@@ -49,6 +46,7 @@ table{width:100%;border-collapse:collapse} th,td{padding:8px 5px;border-bottom:1
   <div id="list" class="list"></div>
 </section>
 <section id="dashboard" class="panel">
+  <div class="card"><h3 style="margin-top:0">Abendstatus</h3><div id="completionDashboard"></div></div>
   <div class="card"><h3 style="margin-top:0">Aktueller Bestand</h3><div id="dash"></div></div>
   <div class="card"><h3 style="margin-top:0">Niedrige Bestände ≤ 1 Behälter</h3><div id="low"></div></div>
 </section>
@@ -58,104 +56,36 @@ table{width:100%;border-collapse:collapse} th,td{padding:8px 5px;border-bottom:1
 </section>
 </main>
 </div>
-<footer id="footer"><div class="foot"><div><b id="footerTotal">0,0 Behälter</b><div class="small">Schritte 0,5 · 1 Behälter = 5,5 kg</div></div><button id="save" class="save">In Cloud speichern</button></div></footer>
-
+<footer id="footer"><div class="foot">
+  <div class="foot-info"><b id="footerTotal">0,0 Behälter</b><div class="small">Schritte 0,5 · 1 Behälter = 5,5 kg</div></div>
+  <button id="save" class="btn save">Bestand speichern</button>
+  <button id="complete" class="btn complete">✓ Abendinventur abschließen</button>
+</div></footer>
 <script>
 const SUPABASE_URL="https://pvnpykkqavomiwofacyz.supabase.co";
 const SUPABASE_KEY="sb_publishable_222Ug8p-B-l43VI7pCZN5g_vpTDo7QQ";
-const FLAVORS=["Almond Orange", "Apfel Zimt", "Apple Crumble", "Banana Pecan", "Bienenstich", "Black Sesame", "Blue Coconut", "Cassis Sorbet", "Cashew Zimt", "Chai Latte", "Chocolate Peanut Swirl", "Chocolate Whisky", "Crazy Peanut", "Coconut Cacao Nibs", "Salted Caramell", "Double Chocolate Hazelnut", "Espresso Hazelnut", "Grapefruit Sorbet", "Hazelnut", "Pop Orange", "Lemon Poppy Seed", "Macadamia", "Macadamia Mocca", "Mango Passion Fruit", "Matcha", "Mint Chip", "Mocca Brownie", "Oat Milk Stracciatella", "Peanut Choc Chip", "Pecan Pie", "Pineapple Sorbet", "Pistachio", "Raffaello", "Raspberry Basil", "Raspberry Coconut", "Raw Chocolate", "Rum Raisin", "Tiramisu", "Salty Maca", "Sour Cherry", "Strawberry Sorbet", "Strawberry White Chocolate", "Tonka White Choc", "Vanilla Bean", "Walnut Maple"];
-const STORES=["Prenzlauer Berg", "Kreuzberg", "Friedrichshain"];
-const STEP=.5, KG=5.5;
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const FLAVORS=["Almond Orange","Apfel Zimt","Apple Crumble","Banana Pecan","Bienenstich","Black Sesame","Blue Coconut","Cassis Sorbet","Cashew Zimt","Chai Latte","Chocolate Peanut Swirl","Chocolate Whisky","Crazy Peanut","Coconut Cacao Nibs","Salted Caramell","Double Chocolate Hazelnut","Espresso Hazelnut","Grapefruit Sorbet","Hazelnut","Pop Orange","Lemon Poppy Seed","Macadamia","Macadamia Mocca","Mango Passion Fruit","Matcha","Mint Chip","Mocca Brownie","Oat Milk Stracciatella","Peanut Choc Chip","Pecan Pie","Pineapple Sorbet","Pistachio","Raffaello","Raspberry Basil","Raspberry Coconut","Raw Chocolate","Rum Raisin","Tiramisu","Salty Maca","Sour Cherry","Strawberry Sorbet","Strawberry White Chocolate","Tonka White Choc","Vanilla Bean","Walnut Maple"];
+const STORES=["Prenzlauer Berg","Kreuzberg","Friedrichshain"],MARKER="__INVENTORY_COMPLETE__",STEP=.5,KG=5.5;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 function fmt(n){return Number(n||0).toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})}
-function headers(extra={}){return {apikey:SUPABASE_KEY,'Content-Type':'application/json',Accept:'application/json',...extra}}
-async function api(path,opts={}){
-  const {headers: extraHeaders = {}, ...fetchOpts} = opts;
-  const url = new URL('/rest/v1/' + path, SUPABASE_URL);
-  const r = await fetch(url.toString(), {
-    ...fetchOpts,
-    headers: headers(extraHeaders)
-  });
-  const body = await r.text();
-  if(!r.ok) throw new Error(`HTTP ${r.status}: ${body || r.statusText}`);
-  if(!body) return null;
-  try { return JSON.parse(body); } catch { return body; }
-}
+function headers(extra={}){return{apikey:SUPABASE_KEY,'Content-Type':'application/json',Accept:'application/json',...extra}}
+async function api(path,opts={}){const{headers:extraHeaders={},...fetchOpts}=opts;const url=new URL('/rest/v1/'+path,SUPABASE_URL);const r=await fetch(url.toString(),{...fetchOpts,headers:headers(extraHeaders)});const body=await r.text();if(!r.ok)throw new Error(`HTTP ${r.status}: ${body||r.statusText}`);if(!body)return null;try{return JSON.parse(body)}catch{return body}}
 STORES.forEach(s=>{$('#store').insertAdjacentHTML('beforeend',`<option>${s}</option>`);$('#histStore').insertAdjacentHTML('beforeend',`<option>${s}</option>`)})
 FLAVORS.forEach(f=>$('#histFlavor').insertAdjacentHTML('beforeend',`<option>${f}</option>`));
 $('#date').value=new Date().toISOString().slice(0,10);
-let current=Object.fromEntries(FLAVORS.map(f=>[f,0]));
+let current=Object.fromEntries(FLAVORS.map(f=>[f,0])),completed=false,completedAt=null,dirty=false;
 function setCloud(msg,cls=''){$('#cloud').textContent=msg;$('#cloud').className='cloud '+cls}
-function render(){
-  $('#list').innerHTML='';
-  for(const f of FLAVORS){
-    const r=document.createElement('div');r.className='row';
-    r.innerHTML=`<div class=name>${f}</div><button class="step minus">−</button><div class=qty>${fmt(current[f])}</div><button class="step plus">+</button>`;
-    r.querySelector('.minus').onclick=()=>{current[f]=Math.max(0,+(current[f]-STEP).toFixed(1));render()};
-    r.querySelector('.plus').onclick=()=>{current[f]=+(current[f]+STEP).toFixed(1);render()};
-    $('#list').appendChild(r)
-  }
-  const t=Object.values(current).reduce((a,b)=>a+Number(b),0);
-  $('#sumContainers').textContent=fmt(t);$('#sumKg').textContent=fmt(t*KG);$('#sumFlavors').textContent=Object.values(current).filter(x=>x>0).length;$('#footerTotal').textContent=fmt(t)+' Behälter'
-}
-async function loadStock(){
-  setCloud('Lade…');
-  current=Object.fromEntries(FLAVORS.map(f=>[f,0]));
-  render(); // Sorten sofort anzeigen, unabhängig von Supabase
-  try{
-    const s=encodeURIComponent($('#store').value),d=$('#date').value;
-    const rows=await api(`stock_entries?store=eq.${s}&stock_date=eq.${d}&select=flavor,containers`);
-    if(Array.isArray(rows)){
-      rows.forEach(x=>{current[x.flavor]=Number(x.containers)});
-      render();
-    }
-    setCloud('Cloud verbunden','ok')
-  }catch(e){
-    setCloud('Cloud-Fehler','err');
-    console.error(e)
-  }
-}
-$('#save').onclick=async()=>{
-  try{
-    setCloud('Speichere…');$('#save').disabled=true;
-    const payload=FLAVORS.map(f=>({store:$('#store').value,stock_date:$('#date').value,flavor:f,containers:Number(current[f]||0),updated_at:new Date().toISOString()}));
-    await api('stock_entries?on_conflict=store,stock_date,flavor',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(payload)});
-    setCloud('✓ gespeichert','ok')
-  }catch(e){
-    setCloud('Speichern fehlgeschlagen','err');
-    alert('Supabase-Fehler:\n\n' + e.message + '\n\nURL: ' + SUPABASE_URL);
-    console.error(e)
-  }
-  $('#save').disabled=false
-};
+function setCompletionUI(){const el=$('#completionState'),btn=$('#complete');if(completed&&!dirty){const t=completedAt?new Date(completedAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}):'';el.className='completion done';el.textContent=`✓ ABENDINVENTUR ABGESCHLOSSEN${t?' · '+t+' Uhr':''}`;btn.className='btn complete done';btn.textContent='✓ Inventur abgeschlossen'}else{el.className='completion open';el.textContent=dirty&&completed?'⚠ Änderungen noch nicht erneut abgeschlossen':'⚠ Abendinventur noch nicht abgeschlossen';btn.className='btn complete';btn.textContent='✓ Abendinventur abschließen'}}
+function render(){const list=$('#list');list.innerHTML='';for(const f of FLAVORS){const r=document.createElement('div');r.className='row';r.innerHTML=`<div class=name>${f}</div><button class="step minus">−</button><div class=qty>${fmt(current[f])}</div><button class="step plus">+</button>`;r.querySelector('.minus').onclick=()=>{current[f]=Math.max(0,+(current[f]-STEP).toFixed(1));dirty=true;render()};r.querySelector('.plus').onclick=()=>{current[f]=+(current[f]+STEP).toFixed(1);dirty=true;render()};list.appendChild(r)}const t=Object.values(current).reduce((a,b)=>a+Number(b),0);$('#sumContainers').textContent=fmt(t);$('#sumKg').textContent=fmt(t*KG);$('#sumFlavors').textContent=Object.values(current).filter(x=>x>0).length;$('#footerTotal').textContent=fmt(t)+' Behälter';setCompletionUI()}
+async function loadStock(){setCloud('Lade…');current=Object.fromEntries(FLAVORS.map(f=>[f,0]));completed=false;completedAt=null;dirty=false;render();try{const s=encodeURIComponent($('#store').value),d=$('#date').value;const rows=await api(`stock_entries?store=eq.${s}&stock_date=eq.${d}&select=flavor,containers,updated_at`);if(Array.isArray(rows)){rows.forEach(x=>{if(x.flavor===MARKER){completed=Number(x.containers)===1;completedAt=x.updated_at}else if(FLAVORS.includes(x.flavor)){current[x.flavor]=Number(x.containers)}});render()}setCloud('Cloud verbunden','ok')}catch(e){setCloud('Cloud-Fehler','err');console.error(e)}}
+async function persistStock(markOpen=false){const payload=FLAVORS.map(f=>({store:$('#store').value,stock_date:$('#date').value,flavor:f,containers:Number(current[f]||0),updated_at:new Date().toISOString()}));if(markOpen)payload.push({store:$('#store').value,stock_date:$('#date').value,flavor:MARKER,containers:0,updated_at:new Date().toISOString()});await api('stock_entries?on_conflict=store,stock_date,flavor',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(payload)})}
+$('#save').onclick=async()=>{try{setCloud('Speichere…');$('#save').disabled=true;await persistStock(true);completed=false;completedAt=null;dirty=false;setCompletionUI();setCloud('✓ Bestand gespeichert · Inventur noch offen','ok')}catch(e){setCloud('Speichern fehlgeschlagen','err');alert('Supabase-Fehler:\n\n'+e.message);console.error(e)}$('#save').disabled=false};
+$('#complete').onclick=async()=>{const total=Object.values(current).reduce((a,b)=>a+Number(b),0),active=Object.values(current).filter(x=>x>0).length;const store=$('#store').value,date=$('#date').value;if(!confirm(`Inventur wirklich abschließen?\n\n${store} · ${date}\n${active} Sorten vorhanden · ${fmt(total)} Behälter\n\nDanach gilt die Abendinventur als vollständig.`))return;try{setCloud('Schließe ab…');$('#complete').disabled=true;await persistStock(false);const now=new Date().toISOString();await api('stock_entries?on_conflict=store,stock_date,flavor',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify([{store,stock_date:date,flavor:MARKER,containers:1,updated_at:now}])});completed=true;completedAt=now;dirty=false;setCompletionUI();setCloud('✓ Abendinventur abgeschlossen','ok')}catch(e){setCloud('Abschluss fehlgeschlagen','err');alert('Abschluss fehlgeschlagen:\n\n'+e.message);console.error(e)}$('#complete').disabled=false};
 $('#store').onchange=loadStock;$('#date').onchange=loadStock;
-
-async function dashboard(){
- try{
-   const rows=await api('stock_entries?select=store,stock_date,flavor,containers&order=stock_date.desc');
-   const latest={}; for(const r of rows){if(!latest[r.store])latest[r.store]=r.stock_date}
-   let dh='';let low=[];
-   for(const s of STORES){
-      const d=latest[s];const rs=rows.filter(r=>r.store===s&&r.stock_date===d);
-      const total=rs.reduce((a,b)=>a+Number(b.containers),0);
-      dh+=`<div class=hist><div><b>${s}</b><div class=small>${d||'kein Bestand'}</div></div><div><b>${fmt(total)}</b> Beh.<div class=small>${fmt(total*KG)} kg</div></div></div>`;
-      rs.filter(r=>Number(r.containers)<=1).forEach(r=>low.push(r))
-   }
-   $('#dash').innerHTML=dh;
-   low.sort((a,b)=>Number(a.containers)-Number(b.containers));
-   $('#low').innerHTML=low.length?`<table><tr><th>Sorte</th><th>Laden</th><th>Bestand</th></tr>${low.slice(0,40).map(r=>`<tr><td>${r.flavor}</td><td>${r.store}</td><td><b>${fmt(r.containers)}</b></td></tr>`).join('')}</table>`:'<div class=small>Keine Daten</div>'
- }catch(e){$('#dash').innerHTML='<div class="err">Datenbank noch nicht eingerichtet.</div>';console.error(e)}
-}
-async function history(){
- try{
-   const s=encodeURIComponent($('#histStore').value),f=encodeURIComponent($('#histFlavor').value);
-   const rows=await api(`stock_entries?store=eq.${s}&flavor=eq.${f}&select=stock_date,containers&order=stock_date.desc&limit=90`);
-   $('#historyList').innerHTML=rows.length?rows.map(r=>`<div class=hist><b>${r.stock_date}</b><div><b>${fmt(r.containers)}</b> Beh.<div class=small>${fmt(r.containers*KG)} kg</div></div></div>`).join(''):'<div class=small>Keine Daten</div>'
- }catch(e){$('#historyList').innerHTML='<div class="err">Datenbank noch nicht eingerichtet.</div>';console.error(e)}
-}
+async function dashboard(){try{const rows=await api('stock_entries?select=store,stock_date,flavor,containers,updated_at&order=stock_date.desc');const latest={};for(const r of rows){if(!latest[r.store])latest[r.store]=r.stock_date}let dh='',ch='',low=[];for(const s of STORES){const d=latest[s],rs=rows.filter(r=>r.store===s&&r.stock_date===d),marker=rs.find(r=>r.flavor===MARKER),stock=rs.filter(r=>r.flavor!==MARKER),total=stock.reduce((a,b)=>a+Number(b.containers),0),done=marker&&Number(marker.containers)===1;let tm=done&&marker.updated_at?new Date(marker.updated_at).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}):'';ch+=`<div class=hist><div><b>${s}</b><div class=small>${d||'kein Bestand'}</div></div><div><span class="status-pill ${done?'done':'open'}">${done?'✓ abgeschlossen'+(tm?' · '+tm:''):'⚠ noch offen'}</span></div></div>`;dh+=`<div class=hist><div><b>${s}</b><div class=small>${d||'kein Bestand'}</div></div><div><b>${fmt(total)}</b> Beh.<div class=small>${fmt(total*KG)} kg</div></div></div>`;stock.filter(r=>Number(r.containers)<=1).forEach(r=>low.push(r))}$('#completionDashboard').innerHTML=ch;$('#dash').innerHTML=dh;low.sort((a,b)=>Number(a.containers)-Number(b.containers));$('#low').innerHTML=low.length?`<table><tr><th>Sorte</th><th>Laden</th><th>Bestand</th></tr>${low.slice(0,40).map(r=>`<tr><td>${r.flavor}</td><td>${r.store}</td><td><b>${fmt(r.containers)}</b></td></tr>`).join('')}</table>`:'<div class=small>Keine Daten</div>'}catch(e){$('#dash').innerHTML='<div class="err">Datenbankfehler.</div>';console.error(e)}}
+async function history(){try{const s=encodeURIComponent($('#histStore').value),f=encodeURIComponent($('#histFlavor').value);const rows=await api(`stock_entries?store=eq.${s}&flavor=eq.${f}&select=stock_date,containers&order=stock_date.desc&limit=90`);$('#historyList').innerHTML=rows.length?rows.map(r=>`<div class=hist><b>${r.stock_date}</b><div><b>${fmt(r.containers)}</b> Beh.<div class=small>${fmt(r.containers*KG)} kg</div></div></div>`).join(''):'<div class=small>Keine Daten</div>'}catch(e){$('#historyList').innerHTML='<div class="err">Datenbankfehler.</div>';console.error(e)}}
 $('#histStore').onchange=history;$('#histFlavor').onchange=history;
 $$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.panel').forEach(x=>x.classList.remove('active'));$('#'+b.dataset.tab).classList.add('active');$('#footer').style.display=b.dataset.tab==='entry'?'block':'none';if(b.dataset.tab==='dashboard')dashboard();if(b.dataset.tab==='history')history()});
-render();
-loadStock();
+render();loadStock();
 </script>
 </body></html>
