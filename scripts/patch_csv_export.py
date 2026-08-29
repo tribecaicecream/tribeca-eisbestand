@@ -51,5 +51,5 @@ $('#exportExcel').onclick=exportAnalyticsCsv;'''
 
 if not pattern.search(s):
     raise SystemExit('Existing Excel export function not found')
-s = pattern.sub(replacement, s, count=1)
+s = pattern.sub(lambda m: replacement, s, count=1)
 path.write_text(s, encoding='utf-8')
