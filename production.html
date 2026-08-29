@@ -62,8 +62,9 @@ th{color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:upperca
 .day-production{padding:0 0 12px}.day-production table{background:rgba(255,255,255,.44)}
 .day-production th:nth-child(2),.day-production th:nth-child(3),.day-production td:nth-child(2),.day-production td:nth-child(3){text-align:right}
 .day-production td:first-child{font-weight:650}
-.analysis-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.analysis-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .analysis-controls select{font-size:14px;padding:11px 12px}
+.metric-picker{margin:12px 0 10px}.metric-picker label{display:block;margin-bottom:6px;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.metric-picker select{font-size:14px;padding:11px 12px}
 .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .kpi{border:1px solid var(--ink);padding:16px;background:rgba(255,255,255,.72)}
 .kpi b{display:block;font-size:28px;line-height:1.05;margin-top:7px;letter-spacing:-.03em}
@@ -136,27 +137,72 @@ header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:145px;fo
         <option value="Prenzlauer Berg">Prenzlauer Berg</option>
         <option value="Kreuzberg">Kreuzberg</option>
       </select>
-      <select id="analyticsMetric">
-        <option value="sauce" selected>Pistaziensoße</option>
-        <option value="cat:Eis">Kategorie · Eis</option>
-        <option value="cat:Drinks">Kategorie · Drinks</option>
-        <option value="cat:Pints">Kategorie · Pints</option>
-        <option value="cat:Mitarbeiter">Kategorie · Mitarbeiter</option>
-        <option value="cat:Gutscheine">Kategorie · Gutscheine</option>
-        <option value="cat:Shirts">Kategorie · Shirts</option>
-      </select>
     </div>
     <div id="analyticsStatus" class="small">Lade Umsatzdaten …</div>
     <div id="analyticsContent" style="display:none">
+      <div class="metric-picker">
+        <label for="metricSelect">Weitere Auswertung</label>
+        <select id="metricSelect">
+          <optgroup label="Umsatz">
+            <option value="gross_turnover" selected>Gross turnover</option>
+            <option value="net_turnover">Net turnover</option>
+            <option value="collected_tips">Collected tips</option>
+          </optgroup>
+          <optgroup label="Drinks">
+            <option value="category_drinks">Kategorie: Drinks</option>
+            <option value="americano">Americano</option>
+            <option value="bier">Bier</option>
+            <option value="coconut">Coconut</option>
+            <option value="doppelter_espresso">Doppelter Espresso</option>
+            <option value="iced_coffee">Iced Coffee</option>
+            <option value="iced_latte">Iced Latte</option>
+            <option value="kombucha">Kombucha</option>
+            <option value="mono_tea">Mono Tea</option>
+            <option value="something_nothing">Something+nothing</option>
+            <option value="wasser">Wasser</option>
+            <option value="wasser_sprudel">Wasser Sprudel</option>
+            <option value="ipa_bier">IPA Bier</option>
+          </optgroup>
+          <optgroup label="Eis">
+            <option value="category_eis">Kategorie: Eis</option>
+            <option value="scoop_1">1</option>
+            <option value="scoop_2">2</option>
+            <option value="scoop_3">3</option>
+            <option value="affogato">Affogato</option>
+            <option value="bunte_waffel">Bunte waffel</option>
+            <option value="free_scoop">Free Scoop</option>
+            <option value="glutenfreie_waffel">Glutenfreie Waffel</option>
+            <option value="home_made_cone">Home made Cone</option>
+            <option value="kids">Kids</option>
+            <option value="sahne">Sahne</option>
+            <option value="sauce_caramel">Sauce Caramel</option>
+            <option value="sauce_erdbeer">Sauce Erdbeer</option>
+            <option value="sauce_haselnuss">Sauce Haselnuss</option>
+            <option value="sauce_mandel">Sauce Mandel</option>
+            <option value="sauce_pistazie">Sauce Pistazie</option>
+            <option value="sauce_choco">Sauce choco</option>
+            <option value="spaghetti_ice_cream">Spaghetti Ice Cream</option>
+            <option value="sundae">Sundae</option>
+            <option value="toppings">Toppings</option>
+          </optgroup>
+          <optgroup label="Weitere">
+            <option value="category_gutscheine">Kategorie: Gutscheine</option>
+            <option value="gutschein_10_kugeln">Gutschein 10 Kugeln</option>
+            <option value="category_mitarbeiter">Kategorie: Mitarbeiter</option>
+            <option value="category_pints">Kategorie: Pints</option>
+            <option value="category_shirts">Kategorie: Shirts</option>
+          </optgroup>
+        </select>
+      </div>
       <div class="kpi-grid">
         <div class="kpi"><small>Nettoumsatz</small><b id="netRevenueKpi">–</b><div id="netRevenueMeta" class="small"></div></div>
-        <div class="kpi"><small id="secondaryMetricLabel">Pistaziensoße verkauft</small><b id="secondaryMetricKpi">–</b><div id="secondaryMetricMeta" class="small"></div></div>
+        <div class="kpi"><small id="selectedMetricLabel">Gross turnover</small><b id="selectedMetricKpi">–</b><div id="selectedMetricMeta" class="small"></div></div>
       </div>
       <div id="storeBreakdown" class="breakdown"></div>
       <div class="chart-title">Nettoumsatz · letzte Tage im Zeitraum</div>
       <div id="revenueChart" class="bar-chart"></div>
-      <div id="secondaryChartTitle" class="chart-title">Pistaziensoße · letzte Tage im Zeitraum</div>
-      <div id="secondaryChart" class="bar-chart"></div>
+      <div id="metricChartTitle" class="chart-title">Gross turnover · letzte Tage im Zeitraum</div>
+      <div id="metricChart" class="bar-chart"></div>
     </div>
   </div>
 
@@ -212,7 +258,50 @@ FLAVORS.forEach(f=>$('#histFlavor').insertAdjacentHTML('beforeend',`<option>${f}
 $('#date').value=localDateISO();
 
 let current=Object.fromEntries(FLAVORS.map(f=>[f,0])),completed=false,completedAt=null,dirty=false,pickerFlavor=null;
-let revenueRows=[],sauceRows=[],categoryRows=[],analyticsLoaded=false;
+const METRICS={
+  gross_turnover:{label:'Gross turnover',unit:'EUR'},
+  net_turnover:{label:'Net turnover',unit:'EUR'},
+  collected_tips:{label:'Collected tips',unit:'EUR'},
+  category_drinks:{label:'Kategorie: Drinks',unit:'EUR'},
+  americano:{label:'Americano',unit:'COUNT'},
+  bier:{label:'Bier',unit:'COUNT'},
+  coconut:{label:'Coconut',unit:'COUNT'},
+  doppelter_espresso:{label:'Doppelter Espresso',unit:'COUNT'},
+  iced_coffee:{label:'Iced Coffee',unit:'COUNT'},
+  iced_latte:{label:'Iced Latte',unit:'COUNT'},
+  kombucha:{label:'Kombucha',unit:'COUNT'},
+  mono_tea:{label:'Mono Tea',unit:'COUNT'},
+  something_nothing:{label:'Something+nothing',unit:'COUNT'},
+  wasser:{label:'Wasser',unit:'COUNT'},
+  wasser_sprudel:{label:'Wasser Sprudel',unit:'COUNT'},
+  category_eis:{label:'Kategorie: Eis',unit:'EUR'},
+  scoop_1:{label:'1',unit:'COUNT'},
+  scoop_2:{label:'2',unit:'COUNT'},
+  scoop_3:{label:'3',unit:'COUNT'},
+  affogato:{label:'Affogato',unit:'COUNT'},
+  bunte_waffel:{label:'Bunte waffel',unit:'COUNT'},
+  free_scoop:{label:'Free Scoop',unit:'COUNT'},
+  glutenfreie_waffel:{label:'Glutenfreie Waffel',unit:'COUNT'},
+  home_made_cone:{label:'Home made Cone',unit:'COUNT'},
+  kids:{label:'Kids',unit:'COUNT'},
+  sahne:{label:'Sahne',unit:'COUNT'},
+  sauce_caramel:{label:'Sauce Caramel',unit:'COUNT'},
+  sauce_erdbeer:{label:'Sauce Erdbeer',unit:'COUNT'},
+  sauce_haselnuss:{label:'Sauce Haselnuss',unit:'COUNT'},
+  sauce_mandel:{label:'Sauce Mandel',unit:'COUNT'},
+  sauce_pistazie:{label:'Sauce Pistazie',unit:'COUNT'},
+  sauce_choco:{label:'Sauce choco',unit:'COUNT'},
+  spaghetti_ice_cream:{label:'Spaghetti Ice Cream',unit:'COUNT'},
+  sundae:{label:'Sundae',unit:'COUNT'},
+  toppings:{label:'Toppings',unit:'COUNT'},
+  category_gutscheine:{label:'Kategorie: Gutscheine',unit:'EUR'},
+  gutschein_10_kugeln:{label:'Gutschein 10 Kugeln',unit:'COUNT'},
+  category_mitarbeiter:{label:'Kategorie: Mitarbeiter',unit:'EUR'},
+  category_pints:{label:'Kategorie: Pints',unit:'EUR'},
+  ipa_bier:{label:'IPA Bier',unit:'COUNT'},
+  category_shirts:{label:'Kategorie: Shirts',unit:'EUR'}
+};
+let revenueRows=[],metricRows=[],analyticsLoaded=false;
 
 function setCloud(msg,cls=''){$('#cloud').textContent=msg;$('#cloud').className='cloud '+cls}
 function setCompletionUI(){
@@ -305,8 +394,10 @@ function analyticsFilter(rows,dateField){
   const store=$('#analyticsStore').value,start=analyticsStartDate();
   return rows.filter(r=>(store==='all'||r.store===store)&&(!start||r[dateField]>=start));
 }
-function groupByDate(rows,dateField,valueField){
-  const m={};rows.forEach(r=>{const d=r[dateField];m[d]=(m[d]||0)+Number(r[valueField]||0)});
+function metricValue(row,key){return Number((row.metrics&&row.metrics[key])||0)}
+function metricFormatter(metric){return metric.unit==='EUR'?fmtEuro:(v=>fmtNumber(v,0))}
+function groupByDate(rows,dateField,valueGetter){
+  const m={};rows.forEach(r=>{const d=r[dateField];m[d]=(m[d]||0)+Number(valueGetter(r)||0)});
   return Object.entries(m).sort((a,b)=>a[0].localeCompare(b[0]));
 }
 function renderBars(target,series,formatter,cls=''){
@@ -317,63 +408,41 @@ function renderBars(target,series,formatter,cls=''){
     return `<div class="bar-row"><div class="bar-date">${shortDate(d)}</div><div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct}%"></div></div><div class="bar-value">${formatter(v)}</div></div>`;
   }).join('');
 }
-function selectedSecondaryMetric(){
-  const selected=$('#analyticsMetric').value;
-  if(selected==='sauce'){
-    return {
-      label:'Pistaziensoße',
-      meta:'Orderbird-Artikel zusammengeführt: Sauce Pistazie / Pistazien',
-      rows:analyticsFilter(sauceRows,'sales_date'),
-      dateField:'sales_date',
-      valueField:'quantity'
-    };
-  }
-  const category=selected.slice(4);
-  return {
-    label:`Kategorie · ${category}`,
-    meta:'Stückzahl = Summe der verkauften Einzelartikel dieser Kategorie',
-    rows:analyticsFilter(categoryRows.filter(r=>r.category_name===category),'sales_date'),
-    dateField:'sales_date',
-    valueField:'quantity'
-  };
-}
-
 function renderAnalytics(){
   if(!analyticsLoaded)return;
-  const rev=analyticsFilter(revenueRows,'revenue_date');
-  const secondary=selectedSecondaryMetric();
+  const key=$('#metricSelect').value,metric=METRICS[key]||METRICS.gross_turnover,formatMetric=metricFormatter(metric);
+  const rev=analyticsFilter(revenueRows,'revenue_date'),selectedRows=analyticsFilter(metricRows,'metric_date');
   const net=rev.reduce((a,r)=>a+Number(r.net_revenue||0),0);
-  const secondaryQty=secondary.rows.reduce((a,r)=>a+Number(r[secondary.valueField]||0),0);
+  const selectedTotal=selectedRows.reduce((a,r)=>a+metricValue(r,key),0);
   const dates=[...new Set(rev.map(r=>r.revenue_date))].sort();
   const start=dates[0],end=dates[dates.length-1];
   $('#netRevenueKpi').textContent=fmtEuro(net);
-  $('#secondaryMetricLabel').textContent=secondary.label+(secondary.label==='Pistaziensoße'?' verkauft':' · verkauft');
-  $('#secondaryMetricKpi').textContent=fmtNumber(secondaryQty,0);
+  $('#selectedMetricLabel').textContent=metric.label;
+  $('#selectedMetricKpi').textContent=formatMetric(selectedTotal);
   $('#netRevenueMeta').textContent=dates.length?`${displayDate(start)} – ${displayDate(end)} · ${dates.length} Berichtstage`:'Keine Umsatzdaten';
-  $('#secondaryMetricMeta').textContent=secondary.meta;
-  $('#secondaryChartTitle').textContent=`${secondary.label} · letzte Tage im Zeitraum`;
+  $('#selectedMetricMeta').textContent=metric.unit==='EUR'?'Orderbird-Wert in €':'Verkaufte Stück';
   const stores=$('#analyticsStore').value==='all'?['Friedrichshain','Prenzlauer Berg','Kreuzberg']:[$('#analyticsStore').value];
   $('#storeBreakdown').innerHTML=stores.map(store=>{
     const r=rev.filter(x=>x.store===store).reduce((a,x)=>a+Number(x.net_revenue||0),0);
-    const q=secondary.rows.filter(x=>x.store===store).reduce((a,x)=>a+Number(x[secondary.valueField]||0),0);
-    return `<div class="breakdown-row"><span>${storeLabel(store)}</span><b>${fmtEuro(r)}</b><b>${fmtNumber(q)} Stk.</b></div>`;
+    const q=selectedRows.filter(x=>x.store===store).reduce((a,x)=>a+metricValue(x,key),0);
+    return `<div class="breakdown-row"><span>${storeLabel(store)}</span><b>${fmtEuro(r)}</b><b>${formatMetric(q)}</b></div>`;
   }).join('');
-  renderBars('#revenueChart',groupByDate(rev,'revenue_date','net_revenue'),v=>fmtEuro(v));
-  renderBars('#secondaryChart',groupByDate(secondary.rows,secondary.dateField,secondary.valueField),v=>fmtNumber(v),'sauce');
+  renderBars('#revenueChart',groupByDate(rev,'revenue_date',r=>r.net_revenue),v=>fmtEuro(v));
+  $('#metricChartTitle').textContent=`${metric.label} · letzte Tage im Zeitraum`;
+  renderBars('#metricChart',groupByDate(selectedRows,'metric_date',r=>metricValue(r,key)),formatMetric,'sauce');
 }
 async function loadAnalytics(){
   $('#analyticsStatus').textContent='Lade Umsatzdaten …';$('#analyticsStatus').className='small';$('#analyticsContent').style.display='none';
   try{
-    const [rev,sauce,categories]=await Promise.all([
+    const [rev,metricData]=await Promise.all([
       api('daily_revenue?select=revenue_date,store,net_revenue&order=revenue_date.asc'),
-      api('daily_item_sales?item_name=eq.Pistazienso%C3%9Fe&select=sales_date,store,quantity&order=sales_date.asc'),
-      api('daily_category_sales?select=sales_date,store,category_name,quantity&order=sales_date.asc')
+      api('daily_orderbird_metrics?select=metric_date,store,metrics&order=metric_date.asc')
     ]);
-    revenueRows=Array.isArray(rev)?rev:[];sauceRows=Array.isArray(sauce)?sauce:[];categoryRows=Array.isArray(categories)?categories:[];
+    revenueRows=Array.isArray(rev)?rev:[];metricRows=Array.isArray(metricData)?metricData:[];
     analyticsLoaded=true;$('#analyticsStatus').textContent='';$('#analyticsContent').style.display='block';renderAnalytics();
   }catch(e){analyticsLoaded=false;$('#analyticsStatus').className='err';$('#analyticsStatus').textContent='Umsatzdaten konnten nicht geladen werden.';console.error(e)}
 }
-$('#analyticsRange').onchange=renderAnalytics;$('#analyticsStore').onchange=renderAnalytics;$('#analyticsMetric').onchange=renderAnalytics;
+$('#analyticsRange').onchange=renderAnalytics;$('#analyticsStore').onchange=renderAnalytics;$('#metricSelect').onchange=renderAnalytics;
 
 async function loadProductionDashboard(){
   try{
