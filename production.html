@@ -62,7 +62,7 @@ th{color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:upperca
 .day-production{padding:0 0 12px}.day-production table{background:rgba(255,255,255,.44)}
 .day-production th:nth-child(2),.day-production th:nth-child(3),.day-production td:nth-child(2),.day-production td:nth-child(3){text-align:right}
 .day-production td:first-child{font-weight:650}
-.analysis-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.analysis-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
 .analysis-controls select{font-size:14px;padding:11px 12px}
 .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .kpi{border:1px solid var(--ink);padding:16px;background:rgba(255,255,255,.72)}
@@ -136,18 +136,27 @@ header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:145px;fo
         <option value="Prenzlauer Berg">Prenzlauer Berg</option>
         <option value="Kreuzberg">Kreuzberg</option>
       </select>
+      <select id="analyticsMetric">
+        <option value="sauce" selected>Pistaziensoße</option>
+        <option value="cat:Eis">Kategorie · Eis</option>
+        <option value="cat:Drinks">Kategorie · Drinks</option>
+        <option value="cat:Pints">Kategorie · Pints</option>
+        <option value="cat:Mitarbeiter">Kategorie · Mitarbeiter</option>
+        <option value="cat:Gutscheine">Kategorie · Gutscheine</option>
+        <option value="cat:Shirts">Kategorie · Shirts</option>
+      </select>
     </div>
     <div id="analyticsStatus" class="small">Lade Umsatzdaten …</div>
     <div id="analyticsContent" style="display:none">
       <div class="kpi-grid">
         <div class="kpi"><small>Nettoumsatz</small><b id="netRevenueKpi">–</b><div id="netRevenueMeta" class="small"></div></div>
-        <div class="kpi"><small>Pistaziensoße verkauft</small><b id="pistachioSauceKpi">–</b><div id="pistachioSauceMeta" class="small"></div></div>
+        <div class="kpi"><small id="secondaryMetricLabel">Pistaziensoße verkauft</small><b id="secondaryMetricKpi">–</b><div id="secondaryMetricMeta" class="small"></div></div>
       </div>
       <div id="storeBreakdown" class="breakdown"></div>
       <div class="chart-title">Nettoumsatz · letzte Tage im Zeitraum</div>
       <div id="revenueChart" class="bar-chart"></div>
-      <div class="chart-title">Pistaziensoße · letzte Tage im Zeitraum</div>
-      <div id="sauceChart" class="bar-chart"></div>
+      <div id="secondaryChartTitle" class="chart-title">Pistaziensoße · letzte Tage im Zeitraum</div>
+      <div id="secondaryChart" class="bar-chart"></div>
     </div>
   </div>
 
@@ -203,7 +212,7 @@ FLAVORS.forEach(f=>$('#histFlavor').insertAdjacentHTML('beforeend',`<option>${f}
 $('#date').value=localDateISO();
 
 let current=Object.fromEntries(FLAVORS.map(f=>[f,0])),completed=false,completedAt=null,dirty=false,pickerFlavor=null;
-let revenueRows=[],sauceRows=[],analyticsLoaded=false;
+let revenueRows=[],sauceRows=[],categoryRows=[],analyticsLoaded=false;
 
 function setCloud(msg,cls=''){$('#cloud').textContent=msg;$('#cloud').className='cloud '+cls}
 function setCompletionUI(){
@@ -308,38 +317,63 @@ function renderBars(target,series,formatter,cls=''){
     return `<div class="bar-row"><div class="bar-date">${shortDate(d)}</div><div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct}%"></div></div><div class="bar-value">${formatter(v)}</div></div>`;
   }).join('');
 }
+function selectedSecondaryMetric(){
+  const selected=$('#analyticsMetric').value;
+  if(selected==='sauce'){
+    return {
+      label:'Pistaziensoße',
+      meta:'Orderbird-Artikel zusammengeführt: Sauce Pistazie / Pistazien',
+      rows:analyticsFilter(sauceRows,'sales_date'),
+      dateField:'sales_date',
+      valueField:'quantity'
+    };
+  }
+  const category=selected.slice(4);
+  return {
+    label:`Kategorie · ${category}`,
+    meta:'Stückzahl = Summe der verkauften Einzelartikel dieser Kategorie',
+    rows:analyticsFilter(categoryRows.filter(r=>r.category_name===category),'sales_date'),
+    dateField:'sales_date',
+    valueField:'quantity'
+  };
+}
+
 function renderAnalytics(){
   if(!analyticsLoaded)return;
-  const rev=analyticsFilter(revenueRows,'revenue_date'),sauce=analyticsFilter(sauceRows,'sales_date');
+  const rev=analyticsFilter(revenueRows,'revenue_date');
+  const secondary=selectedSecondaryMetric();
   const net=rev.reduce((a,r)=>a+Number(r.net_revenue||0),0);
-  const sauceQty=sauce.reduce((a,r)=>a+Number(r.quantity||0),0);
+  const secondaryQty=secondary.rows.reduce((a,r)=>a+Number(r[secondary.valueField]||0),0);
   const dates=[...new Set(rev.map(r=>r.revenue_date))].sort();
   const start=dates[0],end=dates[dates.length-1];
   $('#netRevenueKpi').textContent=fmtEuro(net);
-  $('#pistachioSauceKpi').textContent=fmtNumber(sauceQty,0);
+  $('#secondaryMetricLabel').textContent=secondary.label+(secondary.label==='Pistaziensoße'?' verkauft':' · verkauft');
+  $('#secondaryMetricKpi').textContent=fmtNumber(secondaryQty,0);
   $('#netRevenueMeta').textContent=dates.length?`${displayDate(start)} – ${displayDate(end)} · ${dates.length} Berichtstage`:'Keine Umsatzdaten';
-  $('#pistachioSauceMeta').textContent='Orderbird-Artikel zusammengeführt: Sauce Pistazie / Pistazien';
+  $('#secondaryMetricMeta').textContent=secondary.meta;
+  $('#secondaryChartTitle').textContent=`${secondary.label} · letzte Tage im Zeitraum`;
   const stores=$('#analyticsStore').value==='all'?['Friedrichshain','Prenzlauer Berg','Kreuzberg']:[$('#analyticsStore').value];
   $('#storeBreakdown').innerHTML=stores.map(store=>{
     const r=rev.filter(x=>x.store===store).reduce((a,x)=>a+Number(x.net_revenue||0),0);
-    const q=sauce.filter(x=>x.store===store).reduce((a,x)=>a+Number(x.quantity||0),0);
-    return `<div class="breakdown-row"><span>${storeLabel(store)}</span><b>${fmtEuro(r)}</b><b>${fmtNumber(q)} Soßen</b></div>`;
+    const q=secondary.rows.filter(x=>x.store===store).reduce((a,x)=>a+Number(x[secondary.valueField]||0),0);
+    return `<div class="breakdown-row"><span>${storeLabel(store)}</span><b>${fmtEuro(r)}</b><b>${fmtNumber(q)} Stk.</b></div>`;
   }).join('');
   renderBars('#revenueChart',groupByDate(rev,'revenue_date','net_revenue'),v=>fmtEuro(v));
-  renderBars('#sauceChart',groupByDate(sauce,'sales_date','quantity'),v=>fmtNumber(v),'sauce');
+  renderBars('#secondaryChart',groupByDate(secondary.rows,secondary.dateField,secondary.valueField),v=>fmtNumber(v),'sauce');
 }
 async function loadAnalytics(){
   $('#analyticsStatus').textContent='Lade Umsatzdaten …';$('#analyticsStatus').className='small';$('#analyticsContent').style.display='none';
   try{
-    const [rev,sauce]=await Promise.all([
+    const [rev,sauce,categories]=await Promise.all([
       api('daily_revenue?select=revenue_date,store,net_revenue&order=revenue_date.asc'),
-      api('daily_item_sales?item_name=eq.Pistazienso%C3%9Fe&select=sales_date,store,quantity&order=sales_date.asc')
+      api('daily_item_sales?item_name=eq.Pistazienso%C3%9Fe&select=sales_date,store,quantity&order=sales_date.asc'),
+      api('daily_category_sales?select=sales_date,store,category_name,quantity&order=sales_date.asc')
     ]);
-    revenueRows=Array.isArray(rev)?rev:[];sauceRows=Array.isArray(sauce)?sauce:[];
+    revenueRows=Array.isArray(rev)?rev:[];sauceRows=Array.isArray(sauce)?sauce:[];categoryRows=Array.isArray(categories)?categories:[];
     analyticsLoaded=true;$('#analyticsStatus').textContent='';$('#analyticsContent').style.display='block';renderAnalytics();
   }catch(e){analyticsLoaded=false;$('#analyticsStatus').className='err';$('#analyticsStatus').textContent='Umsatzdaten konnten nicht geladen werden.';console.error(e)}
 }
-$('#analyticsRange').onchange=renderAnalytics;$('#analyticsStore').onchange=renderAnalytics;
+$('#analyticsRange').onchange=renderAnalytics;$('#analyticsStore').onchange=renderAnalytics;$('#analyticsMetric').onchange=renderAnalytics;
 
 async function loadProductionDashboard(){
   try{
