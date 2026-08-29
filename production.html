@@ -126,20 +126,37 @@ header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:145px;fo
     <h3 style="margin-top:0">Verkauf & Umsatz</h3>
     <div class="analysis-controls">
       <select id="analyticsRange">
-        <option value="year" selected>Gesamt 2026</option>
+        <option value="year-2026" selected>Gesamt 2026</option>
         <option value="7">Letzte 7 Tage</option>
-        <option value="month-01">Januar</option>
-        <option value="month-02">Februar</option>
-        <option value="month-03">März</option>
-        <option value="month-04">April</option>
-        <option value="month-05">Mai</option>
-        <option value="month-06">Juni</option>
-        <option value="month-07">Juli</option>
-        <option value="month-08">August</option>
-        <option value="month-09">September</option>
-        <option value="month-10">Oktober</option>
-        <option value="month-11">November</option>
-        <option value="month-12">Dezember</option>
+        <optgroup label="2026">
+          <option value="2026-01">Januar 2026</option>
+          <option value="2026-02">Februar 2026</option>
+          <option value="2026-03">März 2026</option>
+          <option value="2026-04">April 2026</option>
+          <option value="2026-05">Mai 2026</option>
+          <option value="2026-06">Juni 2026</option>
+          <option value="2026-07">Juli 2026</option>
+          <option value="2026-08">August 2026</option>
+          <option value="2026-09">September 2026</option>
+          <option value="2026-10">Oktober 2026</option>
+          <option value="2026-11">November 2026</option>
+          <option value="2026-12">Dezember 2026</option>
+        </optgroup>
+        <option value="year-2025">Gesamt 2025</option>
+        <optgroup label="2025">
+          <option value="2025-01">Januar 2025</option>
+          <option value="2025-02">Februar 2025</option>
+          <option value="2025-03">März 2025</option>
+          <option value="2025-04">April 2025</option>
+          <option value="2025-05">Mai 2025</option>
+          <option value="2025-06">Juni 2025</option>
+          <option value="2025-07">Juli 2025</option>
+          <option value="2025-08">August 2025</option>
+          <option value="2025-09">September 2025</option>
+          <option value="2025-10">Oktober 2025</option>
+          <option value="2025-11">November 2025</option>
+          <option value="2025-12">Dezember 2025</option>
+        </optgroup>
       </select>
       <select id="analyticsStore">
         <option value="all">Alle Standorte</option>
@@ -409,9 +426,9 @@ function analyticsFilter(rows,dateField){
   return rows.filter(r=>{
     if(store!=='all'&&r.store!==store)return false;
     const d=String(r[dateField]||'');
-    if(range==='year')return d.startsWith('2026-');
+    if(range.startsWith('year-'))return d.startsWith(range.slice(5)+'-');
     if(range==='7')return !!latest&&d>=sevenStart&&d<=latest;
-    if(range.startsWith('month-'))return d.startsWith('2026-'+range.slice(6));
+    if(/^\d{4}-\d{2}$/.test(range))return d.startsWith(range);
     return true;
   });
 }
