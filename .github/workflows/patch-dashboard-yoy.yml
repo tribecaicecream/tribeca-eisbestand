@@ -1,0 +1,29 @@
+name: Patch dashboard YoY
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-dashboard-yoy.yml'
+      - 'scripts/patch_dashboard_yoy.py'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch revenue dashboard
+        run: python3 scripts/patch_dashboard_yoy.py
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add production.html
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Add revenue YoY comparison to dashboard"
+          git push
