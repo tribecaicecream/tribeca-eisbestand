@@ -69,9 +69,12 @@ th{color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:upperca
 .kpi{border:1px solid var(--ink);padding:16px;background:rgba(255,255,255,.72)}
 .kpi b{display:block;font-size:28px;line-height:1.05;margin-top:7px;letter-spacing:-.03em}
 .kpi .small{margin-top:7px}
+.yoy{margin-top:7px;font-size:11px;font-weight:800}
+.yoy.positive{color:var(--green)}.yoy.negative{color:var(--red)}.yoy.neutral{color:var(--muted)}
 .breakdown{margin-top:13px;border-top:1px solid var(--line)}
 .breakdown-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}
 .breakdown-row b{text-align:right}
+.breakdown-value{text-align:right}.breakdown-value .yoy{margin-top:2px;font-size:10px;font-weight:700}
 .chart-title{margin:18px 0 8px;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .bar-chart{display:grid;gap:6px}
 .bar-row{display:grid;grid-template-columns:92px minmax(0,1fr) 75px;gap:8px;align-items:center;font-size:10px}
@@ -229,7 +232,7 @@ header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:145px;fo
         </select>
       </div>
       <div class="kpi-grid">
-        <div class="kpi"><small id="selectedMetricLabel">Gross turnover</small><b id="selectedMetricKpi">–</b><div id="selectedMetricMeta" class="small"></div></div>
+        <div class="kpi"><small id="selectedMetricLabel">Gross turnover</small><b id="selectedMetricKpi">–</b><div id="selectedMetricYoY" class="yoy neutral">Vorjahr: –</div><div id="selectedMetricMeta" class="small"></div></div>
       </div>
       <button id="exportExcel" class="btn" style="width:100%;margin-top:10px;background:transparent">CSV exportieren</button>
       <div id="storeBreakdown" class="breakdown"></div>
@@ -308,7 +311,7 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 function fmtKg(n){return Number(n||0).toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})}
 function fmtQty(n){return Number(n||0).toLocaleString('de-DE',{maximumFractionDigits:0})}
 function fmtNumber(n,digits=0){return Number(n||0).toLocaleString('de-DE',{minimumFractionDigits:digits,maximumFractionDigits:digits})}
-function fmtEuro(n){return Number(n||0).toLocaleString('de-DE',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtEuro(n){return Number(n||0).toLocaleString('de-DE',{style:'currency',currency:'EUR',minimumFractionDigits:0,maximumFractionDigits:0})}
 function localDateISO(date=new Date()){const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');return `${y}-${m}-${d}`}
 function displayDate(iso){const [y,m,d]=String(iso).split('-');return `${d}.${m}.${y}`}
 function shortDate(iso){const [,m,d]=String(iso).split('-');const wd=new Date(String(iso)+'T12:00:00').toLocaleDateString('de-DE',{weekday:'short'}).replace('.','');return `${d}.${m}. · ${wd}`}
@@ -463,6 +466,28 @@ function analyticsFilter(rows,dateField){
   });
 }
 function metricValue(row,key){return Number((row.metrics&&row.metrics[key])||0)}
+function shiftYearISO(iso,years=-1){
+  const [y,m,d]=String(iso).split('-');
+  return `${Number(y)+years}-${m}-${d}`;
+}
+function previousPeriodRows(rows,dateField,currentRows){
+  const store=$('#analyticsStore').value;
+  const dates=[...new Set(currentRows.map(r=>String(r[dateField]||'')).filter(Boolean))].sort();
+  if(!dates.length)return [];
+  const start=shiftYearISO(dates[0],-1),end=shiftYearISO(dates[dates.length-1],-1);
+  return rows.filter(r=>{
+    if(store!=='all'&&r.store!==store)return false;
+    const d=String(r[dateField]||'');
+    return d>=start&&d<=end;
+  });
+}
+function yoyInfo(current,previous,formatter,hasPrevious){
+  if(!hasPrevious)return {text:'Kein Vorjahreswert',cls:'neutral'};
+  if(previous===0)return {text:`Vorjahr ${formatter(previous)} · kein %-Vergleich`,cls:'neutral'};
+  const pct=Math.round(((current-previous)/previous)*100);
+  const sign=pct>0?'+':'';
+  return {text:`Vorjahr ${formatter(previous)} · ${sign}${pct} %`,cls:pct>0?'positive':pct<0?'negative':'neutral'};
+}
 function metricFormatter(metric){return metric.unit==='EUR'?fmtEuro:(v=>fmtNumber(v,0))}
 function groupByDate(rows,dateField,valueGetter){
   const m={};rows.forEach(r=>{const d=r[dateField];m[d]=(m[d]||0)+Number(valueGetter(r)||0)});
@@ -480,16 +505,24 @@ function renderAnalytics(){
   if(!analyticsLoaded)return;
   const key=$('#metricSelect').value,metric=METRICS[key]||METRICS.gross_turnover,formatMetric=metricFormatter(metric);
   const selectedRows=analyticsFilter(metricRows,'metric_date');
+  const previousRows=previousPeriodRows(metricRows,'metric_date',selectedRows);
   const selectedTotal=selectedRows.reduce((a,r)=>a+metricValue(r,key),0);
+  const previousTotal=previousRows.reduce((a,r)=>a+metricValue(r,key),0);
   const dates=[...new Set(selectedRows.map(r=>r.metric_date))].sort();
   const periodLabel=$('#analyticsRange').selectedOptions[0]?.textContent||'';
+  const totalYoY=yoyInfo(selectedTotal,previousTotal,formatMetric,previousRows.length>0);
   $('#selectedMetricLabel').textContent=metric.label;
   $('#selectedMetricKpi').textContent=formatMetric(selectedTotal);
+  $('#selectedMetricYoY').className=`yoy ${totalYoY.cls}`;
+  $('#selectedMetricYoY').textContent=totalYoY.text;
   $('#selectedMetricMeta').textContent=dates.length?`${periodLabel} · ${dates.length} Berichtstage · ${displayDate(dates[0])} – ${displayDate(dates[dates.length-1])}`:`${periodLabel} · keine Daten`;
   const stores=$('#analyticsStore').value==='all'?['Friedrichshain','Prenzlauer Berg','Kreuzberg']:[$('#analyticsStore').value];
   $('#storeBreakdown').innerHTML=stores.map(store=>{
     const value=selectedRows.filter(x=>x.store===store).reduce((a,x)=>a+metricValue(x,key),0);
-    return `<div class="breakdown-row"><span>${storeLabel(store)}</span><b>${formatMetric(value)}</b></div>`;
+    const previousStoreRows=previousRows.filter(x=>x.store===store);
+    const previousValue=previousStoreRows.reduce((a,x)=>a+metricValue(x,key),0);
+    const storeYoY=yoyInfo(value,previousValue,formatMetric,previousStoreRows.length>0);
+    return `<div class="breakdown-row"><span>${storeLabel(store)}</span><div class="breakdown-value"><b>${formatMetric(value)}</b><div class="yoy ${storeYoY.cls}">${storeYoY.text}</div></div></div>`;
   }).join('');
   $('#metricChartTitle').textContent=`${metric.label} · einzelne Tage`;
   renderBars('#metricChart',groupByDate(selectedRows,'metric_date',r=>metricValue(r,key)),formatMetric,'sauce');
