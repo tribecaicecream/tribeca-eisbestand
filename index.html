@@ -44,7 +44,7 @@ button{touch-action:manipulation;cursor:pointer}button:disabled{cursor:not-allow
 .qty{height:44px;border:1px solid var(--ink);background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800}
 footer{position:fixed;bottom:0;left:0;right:0;background:rgba(198,243,232,.95);backdrop-filter:blur(14px);border-top:1px solid var(--ink);padding:11px 14px calc(11px + env(safe-area-inset-bottom));z-index:20}
 .foot{max-width:920px;margin:auto;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:9px}
-.btn{border:1px solid var(--ink);border-radius:0;padding:13px 15px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.btn{border:1px solid var(--ink);border-radius:0;padding:13px 15px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:transparent}
 .save{background:var(--ink);color:#fff}.complete{background:var(--green);border-color:var(--green);color:#fff}.complete.done{background:#dfe9df;color:#557057;border-color:#789087}
 .card{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:0;padding:15px;margin-bottom:11px}
 .card h3{font-size:16px;letter-spacing:.08em;text-transform:uppercase}
@@ -67,8 +67,32 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
 .store-stock table{background:rgba(255,255,255,.44)}
 .store-stock th:nth-child(2),.store-stock th:nth-child(3),.store-stock td:nth-child(2),.store-stock td:nth-child(3){text-align:right}
 .store-stock td:first-child{font-weight:650}
-
-@media(max-width:640px){header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:130px;text-align:right;font-size:9px}.tabs{margin-top:15px}.tab{padding-right:12px;margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.admin-lock{align-items:stretch;flex-direction:column}.admin-controls{width:100%}.admin-controls input{width:100%;min-width:0}.row{grid-template-columns:minmax(0,1fr) 44px 62px 44px;gap:5px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 8px;font-size:10px}.stock-table th:nth-child(2),.stock-table td:nth-child(2){display:none}}
+.inventory-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}
+.inventory-head h3{margin:0 0 5px}
+.inventory-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.inventory-actions .btn{background:#fff;padding:10px 12px}
+.inventory-actions .btn.primary{background:var(--ink);color:#fff}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--line)}
+.inventory-matrix{min-width:720px}
+.inventory-matrix th:not(:first-child),.inventory-matrix td:not(:first-child){text-align:right}
+.inventory-matrix td:first-child{font-weight:650;white-space:nowrap}
+.inventory-matrix .total-col{font-weight:900;background:rgba(198,243,232,.34)}
+.inventory-matrix .matrix-total td{font-weight:900;border-top:2px solid var(--ink);background:rgba(198,243,232,.42)}
+@media(max-width:640px){header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:130px;text-align:right;font-size:9px}.tabs{margin-top:15px}.tab{padding-right:12px;margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.admin-lock{align-items:stretch;flex-direction:column}.admin-controls{width:100%}.admin-controls input{width:100%;min-width:0}.row{grid-template-columns:minmax(0,1fr) 44px 62px 44px;gap:5px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 8px;font-size:10px}.stock-table th:nth-child(2),.stock-table td:nth-child(2){display:none}.inventory-head{display:block}.inventory-actions{justify-content:flex-start;margin-top:12px}.inventory-actions .btn{flex:1}.inventory-matrix{min-width:670px}}
+@media print{
+  @page{size:landscape;margin:12mm}
+  html,body{background:#fff!important}
+  body.print-inventory .app{max-width:none;padding:0}
+  body.print-inventory header,body.print-inventory footer,body.print-inventory #entry,body.print-inventory #history,body.print-inventory #dashboard>.card:not(#inventoryCard){display:none!important}
+  body.print-inventory #dashboard{display:block!important}
+  body.print-inventory main{padding:0}
+  body.print-inventory #inventoryCard{display:block!important;background:#fff;border:0;padding:0;margin:0}
+  body.print-inventory .inventory-actions{display:none!important}
+  body.print-inventory .table-scroll{overflow:visible;border-top:1px solid #777}
+  body.print-inventory .inventory-matrix{min-width:0;width:100%}
+  body.print-inventory th,body.print-inventory td{font-size:9pt;padding:5px 4px;border-color:#bbb}
+  body.print-inventory .small{color:#333}
+}
 </style>
 </head>
 <body>
@@ -99,7 +123,16 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
 <section id="dashboard" class="panel">
   <div class="card"><h3 style="margin-top:0">Abendstatus</h3><div id="completionDashboard"></div></div>
   <div class="card"><h3 style="margin-top:0">Aktueller Bestand nach Standort</h3><div id="dash"></div></div>
-  <div class="card"><h3 style="margin-top:0">Niedrige Bestände ≤ 1 Behälter</h3><div id="low"></div></div>
+  <div class="card" id="inventoryCard">
+    <div class="inventory-head">
+      <div><h3>Bestand nach Eissorte</h3><div id="inventoryDateInfo" class="small">Aktuelle Bestände</div></div>
+      <div class="inventory-actions">
+        <button id="downloadExcel" class="btn primary">Excel herunterladen</button>
+        <button id="printInventory" class="btn">Drucken</button>
+      </div>
+    </div>
+    <div id="inventoryMatrix"></div>
+  </div>
 </section>
 <section id="history" class="panel">
   <div class="toolbar"><select id="histStore"></select><select id="histFlavor"></select></div>
@@ -112,6 +145,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
   <button id="save" class="btn save">Bestand speichern</button>
   <button id="complete" class="btn complete">✓ Abendinventur abschließen</button>
 </div></footer>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 const SUPABASE_URL="https://pvnpykkqavomiwofacyz.supabase.co";
 const SUPABASE_KEY="sb_publishable_222Ug8p-B-l43VI7pCZN5g_vpTDo7QQ";
@@ -124,6 +158,7 @@ const ITEMS=[...FLAVORS,...NON_FLAVOR_ITEMS];
 const STORES=["Prenzlauer Berg","Kreuzberg","Friedrichshain","Produktion"],MARKER="__INVENTORY_COMPLETE__",STEP=.5,KG=5.5;
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 function fmt(n){return Number(n||0).toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})}
+function qtyCell(n){return Number(n)>0?fmt(n):''}
 function todayBerlin(){const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),v=Object.fromEntries(p.map(x=>[x.type,x.value]));return `${v.year}-${v.month}-${v.day}`}
 function isPastDate(){return $('#date').value<todayBerlin()}
 function isFutureDate(){return $('#date').value>todayBerlin()}
@@ -134,6 +169,7 @@ STORES.forEach(s=>{$('#store').insertAdjacentHTML('beforeend',`<option>${s}</opt
 FLAVORS.forEach(f=>$('#histFlavor').insertAdjacentHTML('beforeend',`<option>${f}</option>`));
 $('#date').value=todayBerlin();$('#date').max=todayBerlin();
 let current=Object.fromEntries(ITEMS.map(f=>[f,0])),completed=false,completedAt=null,dirty=false,adminUnlocked=false,adminPassword='';
+let latestInventory={latest:{},matrix:[],totals:Object.fromEntries(STORES.map(s=>[s,0])),grandTotal:0};
 function canEdit(){return !isFutureDate()&&(!isPastDate()||adminUnlocked)}
 function setCloud(msg,cls=''){$('#cloud').textContent=msg;$('#cloud').className='cloud '+cls}
 function setLockUI(){const box=$('#pastLock'),controls=$('#adminControls'),input=$('#adminPassword'),btn=$('#adminUnlock');if(isFutureDate()){box.classList.remove('hidden','unlocked');$('#lockTitle').textContent='Zukünftiger Tag · gesperrt';$('#lockText').textContent='Bestände können erst am jeweiligen Tag erfasst werden.';controls.classList.add('hidden');return}if(!isPastDate()){box.classList.add('hidden');controls.classList.remove('hidden');return}box.classList.remove('hidden');controls.classList.remove('hidden');if(adminUnlocked){box.classList.add('unlocked');$('#lockTitle').textContent='Admin-Modus aktiv';$('#lockText').textContent='Du kannst den vergangenen Bestand jetzt ändern.';input.classList.add('hidden');btn.textContent='Sperren'}else{box.classList.remove('unlocked');$('#lockTitle').textContent='Vergangener Tag · gesperrt';$('#lockText').textContent='Nur Admin kann diesen Bestand ändern.';input.classList.remove('hidden');btn.textContent='Entsperren'}}
@@ -148,10 +184,17 @@ $('#adminPassword').addEventListener('keydown',e=>{if(e.key==='Enter')$('#adminU
 $('#save').onclick=async()=>{if(!canEdit())return;try{setCloud('Speichere…');$('#save').disabled=true;await writeInventory(false);completed=false;completedAt=null;dirty=false;render();setCloud(isPastDate()?'✓ Vergangener Bestand geändert':'✓ Bestand gespeichert · Inventur noch offen','ok')}catch(e){if(e.message.includes('Passwort')){adminUnlocked=false;adminPassword='';render()}setCloud('Speichern fehlgeschlagen','err');alert('Speichern fehlgeschlagen:\n\n'+e.message);console.error(e)}$('#save').disabled=!canEdit()};
 $('#complete').onclick=async()=>{if(!canEdit())return;const total=FLAVORS.reduce((a,f)=>a+Number(current[f]||0),0),active=FLAVORS.filter(f=>Number(current[f]||0)>0).length;const store=$('#store').value,date=$('#date').value;if(!confirm(`Inventur wirklich abschließen?\n\n${store} · ${date}\n${active} Sorten vorhanden · ${fmt(total)} Behälter\n\nDanach gilt die Abendinventur als vollständig.`))return;try{setCloud('Schließe ab…');$('#complete').disabled=true;const result=await writeInventory(true),now=result?.updated_at||new Date().toISOString();completed=true;completedAt=now;dirty=false;render();setCloud(isPastDate()?'✓ Vergangene Inventur geändert und abgeschlossen':'✓ Abendinventur abgeschlossen','ok')}catch(e){if(e.message.includes('Passwort')){adminUnlocked=false;adminPassword='';render()}setCloud('Abschluss fehlgeschlagen','err');alert('Abschluss fehlgeschlagen:\n\n'+e.message);console.error(e)}$('#complete').disabled=!canEdit()};
 $('#store').onchange=loadStock;$('#date').onchange=loadStock;
-async function dashboard(){try{const rows=await api('stock_entries?select=store,stock_date,flavor,containers,updated_at&order=stock_date.desc');const latest={};for(const r of rows){if(!latest[r.store])latest[r.store]=r.stock_date}let ch='',low=[],storeRows=[],storeDetails=[],grandTotal=0;for(const s of STORES){const d=latest[s],rs=rows.filter(r=>r.store===s&&r.stock_date===d),marker=rs.find(r=>r.flavor===MARKER),stock=rs.filter(r=>r.flavor!==MARKER&&!NON_FLAVOR_ITEMS.includes(r.flavor)),present=stock.filter(r=>Number(r.containers)>0).sort((a,b)=>a.flavor.localeCompare(b.flavor,'de')),total=stock.reduce((a,b)=>a+Number(b.containers),0),done=marker&&Number(marker.containers)===1;grandTotal+=total;let tm=done&&marker.updated_at?new Date(marker.updated_at).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}):'';ch+=`<div class=hist><div><b>${s}</b><div class=small>${d||'kein Bestand'}</div></div><div><span class="status-pill ${done?'done':'open'}">${done?'✓ abgeschlossen'+(tm?' · '+tm:''):'⚠ noch offen'}</span></div></div>`;storeRows.push(`<tr><td><b>${s}</b></td><td>${d||'–'}</td><td><b>${fmt(total)}</b></td><td>${fmt(total*KG)}</td></tr>`);storeDetails.push(`<details class="store-dropdown"><summary><div><b>${s}</b><div class="store-meta">${d||'kein Bestand'} · ${present.length} Sorten · ${fmt(total)} Behälter</div></div></summary><div class="store-stock">${present.length?`<table><tr><th>Sorte</th><th>Behälter</th><th>kg</th></tr>${present.map(r=>`<tr><td>${r.flavor}</td><td><b>${fmt(r.containers)}</b></td><td>${fmt(Number(r.containers)*KG)}</td></tr>`).join('')}</table>`:'<div class="small">Keine Sorten mit Bestand.</div>'}</div></details>`);stock.filter(r=>Number(r.containers)<=1).forEach(r=>low.push(r))}$('#completionDashboard').innerHTML=ch;$('#dash').innerHTML=`<table class="stock-table"><tr><th>Standort</th><th>Bestandsdatum</th><th>Behälter</th><th>kg</th></tr>${storeRows.join('')}<tr class="stock-total"><td>Gesamt</td><td></td><td>${fmt(grandTotal)}</td><td>${fmt(grandTotal*KG)}</td></tr></table><div class="store-details"><div class="store-details-title">Sorten je Standort</div>${storeDetails.join('')}</div>`;low.sort((a,b)=>Number(a.containers)-Number(b.containers));$('#low').innerHTML=low.length?`<table><tr><th>Sorte</th><th>Laden</th><th>Bestand</th></tr>${low.slice(0,40).map(r=>`<tr><td>${r.flavor}</td><td>${r.store}</td><td><b>${fmt(r.containers)}</b></td></tr>`).join('')}</table>`:'<div class=small>Keine Daten</div>'}catch(e){$('#dash').innerHTML='<div class="err">Datenbankfehler.</div>';console.error(e)}}
+function buildInventoryMatrix(rows,latest){const snapshots={};for(const s of STORES){const d=latest[s];snapshots[s]=new Map(rows.filter(r=>r.store===s&&r.stock_date===d&&FLAVORS.includes(r.flavor)).map(r=>[r.flavor,Number(r.containers)||0]))}const matrix=FLAVORS.map(flavor=>{const values=Object.fromEntries(STORES.map(s=>[s,Number(snapshots[s].get(flavor)||0)]));const total=STORES.reduce((sum,s)=>sum+values[s],0);return{flavor,values,total}}).filter(r=>r.total>0);const totals=Object.fromEntries(STORES.map(s=>[s,matrix.reduce((sum,r)=>sum+r.values[s],0)]));return{matrix,totals,grandTotal:STORES.reduce((sum,s)=>sum+totals[s],0)}}
+function renderInventoryMatrix(){const {matrix,totals,grandTotal}=latestInventory;$('#inventoryDateInfo').textContent=STORES.map(s=>`${s}: ${latestInventory.latest[s]||'–'}`).join(' · ');if(!matrix.length){$('#inventoryMatrix').innerHTML='<div class="small">Keine Bestandsdaten vorhanden.</div>';return}const body=matrix.map(r=>`<tr><td>${r.flavor}</td>${STORES.map(s=>`<td>${qtyCell(r.values[s])}</td>`).join('')}<td class="total-col">${fmt(r.total)}</td></tr>`).join('');$('#inventoryMatrix').innerHTML=`<div class="table-scroll"><table class="inventory-matrix"><thead><tr><th>Eissorte</th>${STORES.map(s=>`<th>${s}</th>`).join('')}<th>Gesamt</th></tr></thead><tbody>${body}<tr class="matrix-total"><td>Gesamt</td>${STORES.map(s=>`<td>${fmt(totals[s])}</td>`).join('')}<td>${fmt(grandTotal)}</td></tr></tbody></table></div>`}
+async function dashboard(){try{const rows=await api('stock_entries?select=store,stock_date,flavor,containers,updated_at&order=stock_date.desc');const latest={};for(const r of rows){if(STORES.includes(r.store)&&!latest[r.store])latest[r.store]=r.stock_date}let ch='',storeRows=[],storeDetails=[],grandTotal=0;for(const s of STORES){const d=latest[s],rs=rows.filter(r=>r.store===s&&r.stock_date===d),marker=rs.find(r=>r.flavor===MARKER),stock=rs.filter(r=>r.flavor!==MARKER&&!NON_FLAVOR_ITEMS.includes(r.flavor)),present=stock.filter(r=>Number(r.containers)>0).sort((a,b)=>a.flavor.localeCompare(b.flavor,'de')),total=stock.reduce((a,b)=>a+Number(b.containers),0),done=marker&&Number(marker.containers)===1;grandTotal+=total;let tm=done&&marker.updated_at?new Date(marker.updated_at).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}):'';ch+=`<div class=hist><div><b>${s}</b><div class=small>${d||'kein Bestand'}</div></div><div><span class="status-pill ${done?'done':'open'}">${done?'✓ abgeschlossen'+(tm?' · '+tm:''):'⚠ noch offen'}</span></div></div>`;storeRows.push(`<tr><td><b>${s}</b></td><td>${d||'–'}</td><td><b>${fmt(total)}</b></td><td>${fmt(total*KG)}</td></tr>`);storeDetails.push(`<details class="store-dropdown"><summary><div><b>${s}</b><div class="store-meta">${d||'kein Bestand'} · ${present.length} Sorten · ${fmt(total)} Behälter</div></div></summary><div class="store-stock">${present.length?`<table><tr><th>Sorte</th><th>Behälter</th><th>kg</th></tr>${present.map(r=>`<tr><td>${r.flavor}</td><td><b>${fmt(r.containers)}</b></td><td>${fmt(Number(r.containers)*KG)}</td></tr>`).join('')}</table>`:'<div class="small">Keine Sorten mit Bestand.</div>'}</div></details>`)}$('#completionDashboard').innerHTML=ch;$('#dash').innerHTML=`<table class="stock-table"><tr><th>Standort</th><th>Bestandsdatum</th><th>Behälter</th><th>kg</th></tr>${storeRows.join('')}<tr class="stock-total"><td>Gesamt</td><td></td><td>${fmt(grandTotal)}</td><td>${fmt(grandTotal*KG)}</td></tr></table><div class="store-details"><div class="store-details-title">Sorten je Standort</div>${storeDetails.join('')}</div>`;const matrixData=buildInventoryMatrix(rows,latest);latestInventory={latest,...matrixData};renderInventoryMatrix()}catch(e){$('#dash').innerHTML='<div class="err">Datenbankfehler.</div>';$('#inventoryMatrix').innerHTML='<div class="err">Datenbankfehler.</div>';console.error(e)}}
+function downloadInventoryExcel(){if(!latestInventory.matrix.length){alert('Keine Bestandsdaten zum Exportieren.');return}if(typeof XLSX==='undefined'){alert('Excel-Export konnte nicht geladen werden. Bitte die Seite neu laden.');return}const dateInfo=STORES.map(s=>`${s}: ${latestInventory.latest[s]||'–'}`).join(' · ');const rows=[['Tribeca Ice Cream – aktueller Eisbestand'],[`Datenstand: ${dateInfo}`],[],['Eissorte',...STORES,'Gesamt'],...latestInventory.matrix.map(r=>[r.flavor,...STORES.map(s=>r.values[s]>0?r.values[s]:''),r.total]),['Gesamt',...STORES.map(s=>latestInventory.totals[s]),latestInventory.grandTotal]];const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:28},{wch:18},{wch:14},{wch:18},{wch:14},{wch:12}];const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Eisbestand');XLSX.writeFile(wb,`Tribeca_Eisbestand_${todayBerlin()}.xlsx`)}
+$('#downloadExcel').onclick=downloadInventoryExcel;
+$('#printInventory').onclick=()=>{if(!latestInventory.matrix.length){alert('Keine Bestandsdaten zum Drucken.');return}document.body.classList.add('print-inventory');window.print();setTimeout(()=>document.body.classList.remove('print-inventory'),500)};
+window.addEventListener('afterprint',()=>document.body.classList.remove('print-inventory'));
 async function history(){try{const s=encodeURIComponent($('#histStore').value),f=encodeURIComponent($('#histFlavor').value);const rows=await api(`stock_entries?store=eq.${s}&flavor=eq.${f}&select=stock_date,containers&order=stock_date.desc&limit=90`);$('#historyList').innerHTML=rows.length?rows.map(r=>`<div class=hist><b>${r.stock_date}</b><div><b>${fmt(r.containers)}</b> Beh.<div class=small>${fmt(r.containers*KG)} kg</div></div></div>`).join(''):'<div class=small>Keine Daten</div>'}catch(e){$('#historyList').innerHTML='<div class="err">Datenbankfehler.</div>';console.error(e)}}
 $('#histStore').onchange=history;$('#histFlavor').onchange=history;
 $$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.panel').forEach(x=>x.classList.remove('active'));$('#'+b.dataset.tab).classList.add('active');$('#footer').style.display=b.dataset.tab==='entry'?'block':'none';if(b.dataset.tab==='dashboard')dashboard();if(b.dataset.tab==='history')history()});
 render();loadStock();
 </script>
-</body></html>
+</body>
+</html>
