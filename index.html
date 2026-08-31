@@ -80,17 +80,24 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
 .inventory-matrix .matrix-total td{font-weight:900;border-top:2px solid var(--ink);background:rgba(198,243,232,.42)}
 @media(max-width:640px){header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:130px;text-align:right;font-size:9px}.tabs{margin-top:15px}.tab{padding-right:12px;margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.admin-lock{align-items:stretch;flex-direction:column}.admin-controls{width:100%}.admin-controls input{width:100%;min-width:0}.row{grid-template-columns:minmax(0,1fr) 44px 62px 44px;gap:5px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 8px;font-size:10px}.stock-table th:nth-child(2),.stock-table td:nth-child(2){display:none}.inventory-head{display:block}.inventory-actions{justify-content:flex-start;margin-top:12px}.inventory-actions .btn{flex:1}.inventory-matrix{min-width:670px}}
 @media print{
-  @page{size:landscape;margin:12mm}
-  html,body{background:#fff!important}
-  body.print-inventory .app{max-width:none;padding:0}
+  @page{size:A4 landscape;margin:6mm}
+  html,body{background:#fff!important;width:100%;height:auto}
+  body.print-inventory .app{max-width:none;padding:0;margin:0}
   body.print-inventory header,body.print-inventory footer,body.print-inventory #entry,body.print-inventory #history,body.print-inventory #dashboard>.card:not(#inventoryCard){display:none!important}
   body.print-inventory #dashboard{display:block!important}
-  body.print-inventory main{padding:0}
-  body.print-inventory #inventoryCard{display:block!important;background:#fff;border:0;padding:0;margin:0}
+  body.print-inventory main{padding:0;margin:0}
+  body.print-inventory #inventoryCard{display:block!important;background:#fff;border:0;padding:0;margin:0;break-inside:avoid;page-break-inside:avoid}
+  body.print-inventory .inventory-head{margin:0 0 3mm;display:block}
+  body.print-inventory .inventory-head h3{font-size:11pt;margin:0 0 1mm;letter-spacing:.04em}
+  body.print-inventory #inventoryDateInfo{font-size:6.5pt;line-height:1.15;margin:0}
   body.print-inventory .inventory-actions{display:none!important}
   body.print-inventory .table-scroll{overflow:visible;border-top:1px solid #777}
-  body.print-inventory .inventory-matrix{min-width:0;width:100%}
-  body.print-inventory th,body.print-inventory td{font-size:9pt;padding:5px 4px;border-color:#bbb}
+  body.print-inventory .inventory-matrix{min-width:0;width:100%;table-layout:fixed;border-collapse:collapse}
+  body.print-inventory .inventory-matrix th:first-child,body.print-inventory .inventory-matrix td:first-child{width:29%;white-space:nowrap}
+  body.print-inventory .inventory-matrix th:not(:first-child),body.print-inventory .inventory-matrix td:not(:first-child){width:14.2%}
+  body.print-inventory th,body.print-inventory td{font-size:6.8pt;line-height:1;padding:1.25mm 1.2mm;border-color:#bbb}
+  body.print-inventory th{font-size:6pt;letter-spacing:.05em}
+  body.print-inventory tr{break-inside:avoid;page-break-inside:avoid}
   body.print-inventory .small{color:#333}
 }
 </style>
