@@ -1,0 +1,29 @@
+name: Patch Excel export formatting
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-excel-export-format.yml'
+      - 'scripts/patch_excel_export_format.py'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch Excel export
+        run: python3 scripts/patch_excel_export_format.py
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Format inventory Excel export for A4 portrait"
+          git push
