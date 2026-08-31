@@ -1,0 +1,29 @@
+name: Patch portrait inventory print
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-print-portrait-inventory.yml'
+      - 'scripts/patch_print_portrait_inventory.py'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch direct inventory print view
+        run: python3 scripts/patch_print_portrait_inventory.py
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Match direct print to A4 portrait Excel layout"
+          git push
