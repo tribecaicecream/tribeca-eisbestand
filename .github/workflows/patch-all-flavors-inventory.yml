@@ -1,0 +1,29 @@
+name: Add all flavors to inventory matrix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-all-flavors-inventory.yml'
+      - 'scripts/patch_all_flavors_inventory.py'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch inventory matrix
+        run: python3 scripts/patch_all_flavors_inventory.py
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Show all flavors in inventory matrix"
+          git push
