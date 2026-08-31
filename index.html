@@ -304,7 +304,7 @@ async function downloadInventoryExcel(){
   }
 }
 $('#downloadExcel').onclick=()=>downloadInventoryExcel();
-function printEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function printEsc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}
 function openInventoryPrintPage(){
   if(!latestInventory.matrix.length){alert('Keine Bestandsdaten zum Drucken.');return}
   const w=window.open('','_blank');
