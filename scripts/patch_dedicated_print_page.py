@@ -40,7 +40,7 @@ function openInventoryPrintPage(){
 }
 $('#printInventory').onclick=openInventoryPrintPage;
 '''
-updated, count = pattern.subn(new, text, count=1)
+updated, count = pattern.subn(lambda _m: new, text, count=1)
 if count != 1:
     raise SystemExit(f'print handler pattern matched {count} times')
 path.write_text(updated)
