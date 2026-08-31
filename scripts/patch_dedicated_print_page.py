@@ -1,12 +1,8 @@
 from pathlib import Path
-import re
 
-path = Path('production.html')
+path = Path('index.html')
 text = path.read_text()
-pattern = re.compile(
-    r"\$\('#printInventory'\)\.onclick=.*?window\.addEventListener\('afterprint'.*?\);\n",
-    re.S,
-)
+old = """$('#printInventory').onclick=()=>{if(!latestInventory.matrix.length){alert('Keine Bestandsdaten zum Drucken.');return}document.body.classList.add('print-inventory');window.print();setTimeout(()=>document.body.classList.remove('print-inventory'),500)};\nwindow.addEventListener('afterprint',()=>document.body.classList.remove('print-inventory'));"""
 new = r'''function printEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function openInventoryPrintPage(){
   if(!latestInventory.matrix.length){alert('Keine Bestandsdaten zum Drucken.');return}
@@ -34,13 +30,11 @@ function openInventoryPrintPage(){
     .sum-row td{font-weight:700;background:#dcefe7;border-top:1.2pt solid #101010;border-bottom:0;padding-top:1.4mm;padding-bottom:1.4mm}
     tr{break-inside:avoid;page-break-inside:avoid}
     @media screen{body{padding:12px;background:#eef2f1}.sheet{max-width:210mm;margin:0 auto;background:#fff;box-shadow:0 2px 18px rgba(0,0,0,.12);padding:7mm}}
-    @media print{.sheet{padding:0!important;box-shadow:none!important}}
-  </style></head><body><div class="sheet"><div class="title"><h1>Tribeca Ice Cream – aktueller Eisbestand</h1><div class="meta">Datenstand: ${printEsc(dateInfo)}</div></div><table><colgroup><col class="flavor">${STORES.map(()=>'<col class="value">').join('')}<col class="value"></colgroup><thead><tr><th>Eissorte</th>${STORES.map(s=>`<th>${printEsc(s)}</th>`).join('')}<th>Gesamt</th></tr></thead><tbody>${body}${totals}</tbody></table></div><script>window.onload=()=>setTimeout(()=>{window.focus();window.print()},250)<\/script></body></html>`);
+    @media print{body{width:196mm}.sheet{width:196mm;padding:0!important;box-shadow:none!important}}
+  </style></head><body><div class="sheet"><div class="title"><h1>Tribeca Ice Cream – aktueller Eisbestand</h1><div class="meta">Datenstand: ${printEsc(dateInfo)}</div></div><table><colgroup><col class="flavor">${STORES.map(()=>'<col class="value">').join('')}<col class="value"></colgroup><thead><tr><th>Eissorte</th>${STORES.map(s=>`<th>${printEsc(s)}</th>`).join('')}<th>Gesamt</th></tr></thead><tbody>${body}${totals}</tbody></table></div><script>window.onload=()=>setTimeout(()=>{window.focus();window.print()},350)<\/script></body></html>`);
   w.document.close();
 }
-$('#printInventory').onclick=openInventoryPrintPage;
-'''
-updated, count = pattern.subn(lambda _m: new, text, count=1)
-if count != 1:
-    raise SystemExit(f'print handler pattern matched {count} times')
-path.write_text(updated)
+$('#printInventory').onclick=openInventoryPrintPage;'''
+if old not in text:
+    raise SystemExit('target print handler not found in index.html')
+path.write_text(text.replace(old,new,1))
