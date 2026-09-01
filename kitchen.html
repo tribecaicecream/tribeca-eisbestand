@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#c6f3e8">
+<title>Tribeca Küchenproduktion</title>
+<style>
+:root{--mint:#c6f3e8;--ink:#101010;--muted:#626a67;--line:rgba(16,16,16,.18);--green:#166b52;--red:#a72f2f;--yellow:#fff0a8;--orange:#9a5a15}
+*{box-sizing:border-box}html{background:var(--mint)}body{margin:0;background:var(--mint);font-family:Avenir,"Avenir Next","Helvetica Neue",Arial,sans-serif;color:var(--ink);letter-spacing:.01em}
+button,select,input{font:inherit;color:inherit}button{touch-action:manipulation;cursor:pointer}.app{max-width:920px;margin:auto;padding-bottom:140px}
+header{position:sticky;top:0;z-index:10;background:rgba(198,243,232,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:18px 18px 14px}
+.brand{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.wordmark{font-family:"Arial Black","Helvetica Neue",Arial,sans-serif;font-weight:900;font-size:25px;line-height:.72;letter-spacing:-1.8px;text-transform:lowercase}.wordmark span{display:block;font-size:14px;line-height:1;margin-left:18px;letter-spacing:-.7px}
+.cloud{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;padding-top:5px;text-align:right}.tabs{display:flex;gap:4px;overflow:auto;margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+.tab{border:0;background:transparent;padding:9px 18px 8px 0;margin-right:16px;white-space:nowrap;font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;border-bottom:2px solid transparent}.tab.active{border-bottom-color:var(--ink)}
+main{padding:18px}.panel{display:none}.panel.active{display:block}.toolbar{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:12px}
+select,input{width:100%;padding:13px 14px;border:1px solid var(--ink);border-radius:0;background:rgba(255,255,255,.8);font-size:16px}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.metric{background:rgba(255,255,255,.72);border:1px solid var(--line);padding:15px}.metric small{color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}.metric b{display:block;font-size:25px;margin-top:5px}
+.completion{padding:14px;margin:12px 0;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--ink)}.completion.open{background:#fff1c9;color:#71420d}.completion.done{background:#dcefe7;color:#155b47}
+.list{display:grid;gap:7px}.row{display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:10px;align-items:center;background:rgba(255,255,255,.82);border:1px solid var(--line);padding:8px 9px}.name{font-size:14px;font-weight:650;line-height:1.15}.qty-button{height:48px;border:1px solid var(--ink);background:var(--yellow);font-size:19px;font-weight:900}.qty-button.has-value{background:var(--ink);color:#fff}
+footer{position:fixed;bottom:0;left:0;right:0;background:rgba(198,243,232,.95);backdrop-filter:blur(14px);border-top:1px solid var(--ink);padding:11px 14px calc(11px + env(safe-area-inset-bottom));z-index:20}.foot{max-width:920px;margin:auto;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:9px}.foot-info{font-size:11px;color:var(--muted)}.btn{border:1px solid var(--ink);padding:13px 15px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.save{background:var(--ink);color:#fff}.complete{background:var(--green);border-color:var(--green);color:#fff}.complete.done{background:#dfe9df;color:#557057;border-color:#789087}
+.card{background:rgba(255,255,255,.78);border:1px solid var(--line);padding:15px;margin-bottom:11px}.card h3{font-size:16px;letter-spacing:.08em;text-transform:uppercase}.small{font-size:12px;color:var(--muted)}.ok{color:var(--green)}.err{color:var(--red)}
+.hist{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase}td:nth-child(2),th:nth-child(2){text-align:right}
+.day{border-bottom:1px solid var(--line)}.day summary{list-style:none;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:14px 0;cursor:pointer}.day summary::-webkit-details-marker{display:none}.day summary:after{content:"+";font-size:24px}.day[open] summary:after{content:"−"}.day-meta{font-size:11px;color:var(--muted);margin-top:3px}.status{display:inline-block;padding:4px 7px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:#fff0c9;color:#8b5010}.status.done{background:#dcefe7;color:#155b47}
+.picker-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:50;display:none;align-items:flex-end;justify-content:center;padding:14px}.picker-backdrop.open{display:flex}.picker{width:min(560px,100%);background:var(--mint);border:2px solid var(--ink);padding:16px;max-height:88vh;overflow:auto}.picker-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px}.picker-title{font-size:18px;font-weight:900}.picker-sub{font-size:11px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.1em}.picker-close{width:44px;height:44px;border:1px solid var(--ink);background:transparent;font-size:24px}.number-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.number-btn{min-height:52px;border:1px solid var(--ink);background:#fff;font-size:18px;font-weight:850}.number-btn.selected{background:var(--ink);color:#fff}.zero-btn{width:100%;min-height:48px;margin-top:10px;border:1px solid var(--ink);background:transparent;font-weight:800;text-transform:uppercase}
+@media(max-width:640px){header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:145px;font-size:9px}.tab{margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}.row{grid-template-columns:minmax(0,1fr) 82px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 8px;font-size:10px}.picker-backdrop{padding:8px}.number-grid{gap:6px}.number-btn{min-height:50px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand"><div class="wordmark">tribeca<span>ice cream</span></div><div id="cloud" class="cloud">Küche · Cloud bereit</div></div>
+  <div class="tabs">
+    <button class="tab active" data-tab="entry">Produktion</button>
+    <button class="tab" data-tab="days">Produktionshistorie</button>
+    <button class="tab" data-tab="flavor">Historie Sorte</button>
+  </div>
+</header>
+<main>
+<section id="entry" class="panel active">
+  <div class="toolbar"><input id="date" type="date"></div>
+  <div id="completionState" class="completion open">⚠ Tagesproduktion noch nicht abgeschlossen</div>
+  <div class="summary">
+    <div class="metric"><small>Behälter</small><b id="sumContainers">0</b></div>
+    <div class="metric"><small>kg</small><b id="sumKg">0,0</b></div>
+    <div class="metric"><small>Sorten</small><b id="sumFlavors">0</b></div>
+  </div>
+  <div id="list" class="list"></div>
+</section>
+<section id="days" class="panel">
+  <div class="card">
+    <h3 style="margin-top:0">Produktionshistorie</h3>
+    <div class="small" style="margin-bottom:10px">Die letzten 30 Produktionstage. Nur Produktionsdaten – keine Umsätze.</div>
+    <div id="daysStatus" class="small">Lade …</div>
+    <div id="daysList"></div>
+  </div>
+</section>
+<section id="flavor" class="panel">
+  <div class="card">
+    <h3 style="margin-top:0">Historie je Sorte</h3>
+    <select id="histFlavor"></select>
+    <div id="historyList" style="margin-top:8px"></div>
+  </div>
+</section>
+</main>
+</div>
+<footer id="footer">
+  <div class="foot">
+    <div id="footInfo" class="foot-info">Noch keine Änderungen</div>
+    <button id="save" class="btn save">Speichern</button>
+    <button id="complete" class="btn complete">Tag abschließen</button>
+  </div>
+</footer>
+<div id="pickerBackdrop" class="picker-backdrop">
+  <div class="picker">
+    <div class="picker-head">
+      <div><div id="pickerTitle" class="picker-title">Menge</div><div class="picker-sub">Behälter auswählen</div></div>
+      <button id="pickerClose" class="picker-close">×</button>
+    </div>
+    <div id="numberGrid" class="number-grid"></div>
+    <button id="zeroBtn" class="zero-btn">0 · nicht produziert</button>
+  </div>
+</div>
+<script>
+const SUPABASE_URL="https://pvnpykkqavomiwofacyz.supabase.co";
+const SUPABASE_KEY="sb_publishable_222Ug8p-B-l43VI7pCZN5g_vpTDo7QQ";
+const FLAVORS=["Almond Orange","Apfel Zimt","Apple Crumble","Banana Pecan","Bienenstich","Black Sesame","Blue Coconut","Cashew Zimt","Cassis Sorbet","Chai Latte","Chocolate Peanut Swirl","Chocolate Whisky","Coconut Cacao Nibs","Crazy Peanut","Double Chocolate Hazelnut","Espresso Hazelnut","Grapefruit Sorbet","Hazelnut","Kalamansi Sorbet","Lemon Poppy Seed","Macadamia","Macadamia Mocca","Mango Passion Fruit","Matcha","Mint Chip","Mocca Brownie","Oat Milk Stracciatella","Peanut Choc Chip","Pecan Pie","Pineapple Sorbet","Pistachio","Pop Orange","Raffaello","Raspberry Basil","Raspberry Coconut","Raw Chocolate","Rum Raisin","Salted Caramell","Salty Maca","Sour Cherry","Strawberry Sorbet","Strawberry White Chocolate","Tiramisu","Tonka White Choc","Vanilla Bean","Walnut Maple","Yellow Peach Sorbet","Yuzu Cheesecake","Zitrone Minze","Zitrone Sorbet","Zitrone Zimt"];
+const MARKER="__PRODUCTION_COMPLETE__", KG=5.5;
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const fmtKg=n=>Number(n||0).toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:1});
+const fmtQty=n=>Number(n||0).toLocaleString("de-DE",{maximumFractionDigits:0});
+function localDateISO(date=new Date()){const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,"0"),d=String(date.getDate()).padStart(2,"0");return `${y}-${m}-${d}`}
+function displayDate(iso){const [y,m,d]=String(iso).split("-");return `${d}.${m}.${y}`}
+function headers(extra={}){return{apikey:SUPABASE_KEY,"Content-Type":"application/json",Accept:"application/json",...extra}}
+async function api(path,opts={}){const{headers:extraHeaders={},...fetchOpts}=opts;const url=new URL("/rest/v1/"+path,SUPABASE_URL);const r=await fetch(url.toString(),{...fetchOpts,headers:headers(extraHeaders)});const body=await r.text();if(!r.ok)throw new Error(`HTTP ${r.status}: ${body||r.statusText}`);if(!body)return null;try{return JSON.parse(body)}catch{return body}}
+function setCloud(text,cls=""){const el=$("#cloud");el.textContent=text;el.className="cloud "+cls}
+let current={},completed=false,completedAt=null,dirty=false,pickerFlavor=null;
+$("#date").value=localDateISO();
+FLAVORS.forEach(f=>$("#histFlavor").insertAdjacentHTML("beforeend",`<option>${f}</option>`));
+function render(){
+  $("#list").innerHTML=FLAVORS.map(f=>`<div class="row"><div class="name">${f}</div><button class="qty-button ${Number(current[f])>0?"has-value":""}" data-flavor="${f.replace(/"/g,"&quot;")}">${fmtQty(current[f]||0)}</button></div>`).join("");
+  $$(".qty-button").forEach(b=>b.onclick=()=>openPicker(b.dataset.flavor));
+  const vals=FLAVORS.map(f=>Number(current[f]||0)),sum=vals.reduce((a,b)=>a+b,0);
+  $("#sumContainers").textContent=fmtQty(sum);$("#sumKg").textContent=fmtKg(sum*KG);$("#sumFlavors").textContent=fmtQty(vals.filter(v=>v>0).length);
+  $("#footInfo").textContent=dirty?"Änderungen noch nicht gespeichert":completed?"Tagesproduktion abgeschlossen":"Produktion offen";
+}
+function setCompletionUI(){
+  const el=$("#completionState"),btn=$("#complete");
+  if(completed){el.className="completion done";el.textContent="✓ Tagesproduktion abgeschlossen";btn.textContent="Abgeschlossen";btn.classList.add("done")}
+  else{el.className="completion open";el.textContent="⚠ Tagesproduktion noch nicht abgeschlossen";btn.textContent="Tag abschließen";btn.classList.remove("done")}
+}
+async function loadProduction(){
+  setCloud("Lade…");current=Object.fromEntries(FLAVORS.map(f=>[f,0]));completed=false;completedAt=null;dirty=false;render();setCompletionUI();
+  try{
+    const d=$("#date").value,rows=await api(`production_entries?production_date=eq.${d}&select=flavor,containers,updated_at`);
+    (rows||[]).forEach(x=>{if(x.flavor===MARKER){completed=Number(x.containers)===1;completedAt=x.updated_at}else if(FLAVORS.includes(x.flavor)){current[x.flavor]=Math.max(0,Math.round(Number(x.containers)||0))}});
+    render();setCompletionUI();setCloud("Küche · Cloud bereit","ok");
+  }catch(e){setCloud("Datenbankfehler","err");console.error(e)}
+}
+async function persistProduction(markOpen=false){
+  const now=new Date().toISOString(),payload=FLAVORS.map(f=>({production_date:$("#date").value,flavor:f,containers:Math.max(0,Math.round(Number(current[f]||0))),updated_at:now}));
+  if(markOpen)payload.push({production_date:$("#date").value,flavor:MARKER,containers:0,updated_at:now});
+  await api("production_entries?on_conflict=production_date,flavor",{method:"POST",headers:{Prefer:"resolution=merge-duplicates,return=minimal"},body:JSON.stringify(payload)});
+}
+$("#save").onclick=async()=>{
+  try{setCloud("Speichere…");$("#save").disabled=true;await persistProduction(true);completed=false;completedAt=null;dirty=false;render();setCompletionUI();setCloud("✓ Produktion gespeichert · noch offen","ok")}
+  catch(e){setCloud("Speichern fehlgeschlagen","err");alert("Speichern fehlgeschlagen:\n\n"+e.message);console.error(e)}
+  $("#save").disabled=false;
+};
+$("#complete").onclick=async()=>{
+  const date=$("#date").value;
+  if(completed&&!dirty)return;
+  if(!confirm(`Tagesproduktion vom ${displayDate(date)} abschließen?\n\nDanach ist der Tag als vollständig markiert.`))return;
+  try{
+    setCloud("Schließe ab…");$("#complete").disabled=true;await persistProduction(false);const now=new Date().toISOString();
+    await api("production_entries?on_conflict=production_date,flavor",{method:"POST",headers:{Prefer:"resolution=merge-duplicates,return=minimal"},body:JSON.stringify([{production_date:date,flavor:MARKER,containers:1,updated_at:now}])});
+    completed=true;completedAt=now;dirty=false;render();setCompletionUI();setCloud("✓ Tagesproduktion abgeschlossen","ok");
+  }catch(e){setCloud("Abschluss fehlgeschlagen","err");alert("Abschluss fehlgeschlagen:\n\n"+e.message);console.error(e)}
+  $("#complete").disabled=false;
+};
+function openPicker(flavor){
+  pickerFlavor=flavor;$("#pickerTitle").textContent=flavor;
+  $("#numberGrid").innerHTML=Array.from({length:30},(_,i)=>i+1).map(n=>`<button class="number-btn ${Number(current[flavor])===n?"selected":""}" data-n="${n}">${n}</button>`).join("");
+  $$(".number-btn").forEach(b=>b.onclick=()=>setQty(Number(b.dataset.n)));
+  $("#pickerBackdrop").classList.add("open");
+}
+function closePicker(){$("#pickerBackdrop").classList.remove("open");pickerFlavor=null}
+function setQty(n){if(!pickerFlavor)return;current[pickerFlavor]=n;dirty=true;completed=false;render();setCompletionUI();closePicker()}
+$("#zeroBtn").onclick=()=>setQty(0);$("#pickerClose").onclick=closePicker;$("#pickerBackdrop").onclick=e=>{if(e.target===$("#pickerBackdrop"))closePicker()};
+$("#date").onchange=loadProduction;
+async function loadDays(){
+  $("#daysStatus").textContent="Lade Produktionshistorie …";$("#daysList").innerHTML="";
+  try{
+    const rows=await api("production_entries?select=production_date,flavor,containers,updated_at&order=production_date.desc&limit=5000");
+    const dates=[...new Set((rows||[]).map(r=>r.production_date))].sort().reverse().slice(0,30);
+    $("#daysStatus").textContent=dates.length?"":"Keine Produktionsdaten.";
+    $("#daysList").innerHTML=dates.map(d=>{
+      const rs=rows.filter(r=>r.production_date===d),marker=rs.find(r=>r.flavor===MARKER),prod=rs.filter(r=>r.flavor!==MARKER&&Number(r.containers)>0).sort((a,b)=>a.flavor.localeCompare(b.flavor,"de"));
+      const sum=prod.reduce((s,r)=>s+Number(r.containers||0),0),status=marker&&Number(marker.containers)===1;
+      return `<details class="day"><summary><div><b>${displayDate(d)}</b><div class="day-meta">${fmtQty(sum)} Beh. · ${fmtKg(sum*KG)} kg · ${prod.length} Sorten</div></div><span class="status ${status?"done":""}">${status?"abgeschlossen":"offen"}</span></summary><table><thead><tr><th>Sorte</th><th>Behälter</th></tr></thead><tbody>${prod.map(r=>`<tr><td>${r.flavor}</td><td><b>${fmtQty(r.containers)}</b></td></tr>`).join("")||'<tr><td colspan="2">Keine Mengen</td></tr>'}</tbody></table></details>`;
+    }).join("");
+  }catch(e){$("#daysStatus").textContent="Datenbankfehler.";$("#daysStatus").className="err";console.error(e)}
+}
+async function history(){
+  $("#historyList").innerHTML='<div class="small">Lade …</div>';
+  try{
+    const f=encodeURIComponent($("#histFlavor").value),rows=await api(`production_entries?flavor=eq.${f}&containers=gt.0&select=production_date,containers&order=production_date.desc&limit=90`);
+    $("#historyList").innerHTML=(rows||[]).length?rows.map(r=>`<div class="hist"><b>${displayDate(r.production_date)}</b><div><b>${fmtQty(r.containers)}</b> Beh.<div class="small">${fmtKg(Number(r.containers)*KG)} kg</div></div></div>`).join(""):'<div class="small">Keine Daten</div>';
+  }catch(e){$("#historyList").innerHTML='<div class="err">Datenbankfehler.</div>';console.error(e)}
+}
+$("#histFlavor").onchange=history;
+$$(".tab").forEach(b=>b.onclick=()=>{
+  $$(".tab").forEach(x=>x.classList.toggle("active",x===b));$$(".panel").forEach(p=>p.classList.toggle("active",p.id===b.dataset.tab));
+  $("#footer").style.display=b.dataset.tab==="entry"?"block":"none";
+  if(b.dataset.tab==="days")loadDays();if(b.dataset.tab==="flavor")history();
+});
+window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
+loadProduction();
+</script>
+</body>
+</html>
