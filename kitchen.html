@@ -20,10 +20,12 @@ select,input{width:100%;padding:13px 14px;border:1px solid var(--ink);border-rad
 .list{display:grid;gap:7px}.row{display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:10px;align-items:center;background:rgba(255,255,255,.82);border:1px solid var(--line);padding:8px 9px}.name{font-size:14px;font-weight:650;line-height:1.15}.qty-button{height:48px;border:1px solid var(--ink);background:var(--yellow);font-size:19px;font-weight:900}.qty-button.has-value{background:var(--ink);color:#fff}
 footer{position:fixed;bottom:0;left:0;right:0;background:rgba(198,243,232,.95);backdrop-filter:blur(14px);border-top:1px solid var(--ink);padding:11px 14px calc(11px + env(safe-area-inset-bottom));z-index:20}.foot{max-width:920px;margin:auto;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:9px}.foot-info{font-size:11px;color:var(--muted)}.btn{border:1px solid var(--ink);padding:13px 15px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.save{background:var(--ink);color:#fff}.complete{background:var(--green);border-color:var(--green);color:#fff}.complete.done{background:#dfe9df;color:#557057;border-color:#789087}
 .card{background:rgba(255,255,255,.78);border:1px solid var(--line);padding:15px;margin-bottom:11px}.card h3{font-size:16px;letter-spacing:.08em;text-transform:uppercase}.small{font-size:12px;color:var(--muted)}.ok{color:var(--green)}.err{color:var(--red)}
-.hist{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase}td:nth-child(2),th:nth-child(2){text-align:right}
+table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase}td:nth-child(2),th:nth-child(2){text-align:right}
+.matrix-wrap{margin-top:12px;overflow:auto;border:1px solid var(--ink);background:rgba(255,255,255,.55);-webkit-overflow-scrolling:touch}.matrix{min-width:790px;border-collapse:separate;border-spacing:0}.matrix th,.matrix td{padding:8px 7px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center;white-space:nowrap;font-size:11px}.matrix thead th{position:sticky;top:0;z-index:3;background:#edf9f5;color:var(--muted);font-size:9px;line-height:1.25}.matrix thead th span{display:block;font-size:9px;font-weight:800}.matrix thead th b{display:block;margin-top:2px;color:var(--ink);font-size:10px}.matrix .flavor-head,.matrix .flavor-cell{position:sticky;left:0;z-index:2;text-align:left;min-width:178px;max-width:178px;white-space:normal;background:#f8fffc}.matrix .flavor-head{z-index:4;background:#edf9f5}.matrix .flavor-cell{font-weight:700;font-size:11px;line-height:1.15}.matrix .value{font-weight:800}.matrix .zero{color:#b6bebb;font-weight:500}.matrix .sum-col{background:rgba(198,243,232,.48);font-weight:900}.matrix tfoot th,.matrix tfoot td{background:#e4f5ef;font-weight:900;border-bottom:0}.matrix tfoot .flavor-cell{background:#e4f5ef}.matrix th:last-child,.matrix td:last-child{border-right:0}.matrix-summary{margin-top:8px;font-size:11px;font-weight:700;color:var(--muted)}
+.section-title{margin:5px 0 2px;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .day{border-bottom:1px solid var(--line)}.day summary{list-style:none;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:14px 0;cursor:pointer}.day summary::-webkit-details-marker{display:none}.day summary:after{content:"+";font-size:24px}.day[open] summary:after{content:"−"}.day-meta{font-size:11px;color:var(--muted);margin-top:3px}.status{display:inline-block;padding:4px 7px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:#fff0c9;color:#8b5010}.status.done{background:#dcefe7;color:#155b47}
 .picker-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:50;display:none;align-items:flex-end;justify-content:center;padding:14px}.picker-backdrop.open{display:flex}.picker{width:min(560px,100%);background:var(--mint);border:2px solid var(--ink);padding:16px;max-height:88vh;overflow:auto}.picker-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px}.picker-title{font-size:18px;font-weight:900}.picker-sub{font-size:11px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.1em}.picker-close{width:44px;height:44px;border:1px solid var(--ink);background:transparent;font-size:24px}.number-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.number-btn{min-height:52px;border:1px solid var(--ink);background:#fff;font-size:18px;font-weight:850}.number-btn.selected{background:var(--ink);color:#fff}.zero-btn{width:100%;min-height:48px;margin-top:10px;border:1px solid var(--ink);background:transparent;font-weight:800;text-transform:uppercase}
-@media(max-width:640px){header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:145px;font-size:9px}.tab{margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}.row{grid-template-columns:minmax(0,1fr) 82px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 8px;font-size:10px}.picker-backdrop{padding:8px}.number-grid{gap:6px}.number-btn{min-height:50px}}
+@media(max-width:640px){header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:145px;font-size:9px}.tab{margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}.row{grid-template-columns:minmax(0,1fr) 82px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 8px;font-size:10px}.picker-backdrop{padding:8px}.number-grid{gap:6px}.number-btn{min-height:50px}.card{padding:12px}.matrix-wrap{margin-left:-12px;margin-right:-12px;border-left:0;border-right:0}.matrix .flavor-head,.matrix .flavor-cell{min-width:148px;max-width:148px}}
 </style>
 </head>
 <body>
@@ -33,7 +35,6 @@ footer{position:fixed;bottom:0;left:0;right:0;background:rgba(198,243,232,.95);b
   <div class="tabs">
     <button class="tab active" data-tab="entry">Produktion</button>
     <button class="tab" data-tab="days">Produktionshistorie</button>
-    <button class="tab" data-tab="flavor">Historie Sorte</button>
   </div>
 </header>
 <main>
@@ -49,17 +50,16 @@ footer{position:fixed;bottom:0;left:0;right:0;background:rgba(198,243,232,.95);b
 </section>
 <section id="days" class="panel">
   <div class="card">
-    <h3 style="margin-top:0">Produktionshistorie</h3>
-    <div class="small" style="margin-bottom:10px">Die letzten 30 Produktionstage. Nur Produktionsdaten – keine Umsätze.</div>
+    <h3 style="margin-top:0;margin-bottom:4px">Produktion · letzte 7 Tage</h3>
+    <div class="small">Alle Sorten in Behältern. Auf dem Handy die Tabelle seitlich wischen.</div>
+    <div id="matrixSummary" class="matrix-summary">Lade …</div>
+    <div id="matrixWrap" class="matrix-wrap"></div>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Produktionstage</h3>
+    <div class="small" style="margin-bottom:10px">Die letzten 30 Produktionstage zum Aufklappen.</div>
     <div id="daysStatus" class="small">Lade …</div>
     <div id="daysList"></div>
-  </div>
-</section>
-<section id="flavor" class="panel">
-  <div class="card">
-    <h3 style="margin-top:0">Historie je Sorte</h3>
-    <select id="histFlavor"></select>
-    <div id="historyList" style="margin-top:8px"></div>
   </div>
 </section>
 </main>
@@ -91,12 +91,13 @@ const fmtKg=n=>Number(n||0).toLocaleString("de-DE",{minimumFractionDigits:1,maxi
 const fmtQty=n=>Number(n||0).toLocaleString("de-DE",{maximumFractionDigits:0});
 function localDateISO(date=new Date()){const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,"0"),d=String(date.getDate()).padStart(2,"0");return `${y}-${m}-${d}`}
 function displayDate(iso){const [y,m,d]=String(iso).split("-");return `${d}.${m}.${y}`}
+function matrixDate(iso){const dt=new Date(iso+"T12:00:00"),wd=dt.toLocaleDateString("de-DE",{weekday:"short"}).replace(".",""),dm=dt.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"});return `<span>${wd}</span><b>${dm}</b>`}
+function last7Dates(){const out=[];for(let i=6;i>=0;i--){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i);out.push(localDateISO(d))}return out}
 function headers(extra={}){return{apikey:SUPABASE_KEY,"Content-Type":"application/json",Accept:"application/json",...extra}}
 async function api(path,opts={}){const{headers:extraHeaders={},...fetchOpts}=opts;const url=new URL("/rest/v1/"+path,SUPABASE_URL);const r=await fetch(url.toString(),{...fetchOpts,headers:headers(extraHeaders)});const body=await r.text();if(!r.ok)throw new Error(`HTTP ${r.status}: ${body||r.statusText}`);if(!body)return null;try{return JSON.parse(body)}catch{return body}}
 function setCloud(text,cls=""){const el=$("#cloud");el.textContent=text;el.className="cloud "+cls}
 let current={},completed=false,completedAt=null,dirty=false,pickerFlavor=null;
 $("#date").value=localDateISO();
-FLAVORS.forEach(f=>$("#histFlavor").insertAdjacentHTML("beforeend",`<option>${f}</option>`));
 function render(){
   $("#list").innerHTML=FLAVORS.map(f=>`<div class="row"><div class="name">${f}</div><button class="qty-button ${Number(current[f])>0?"has-value":""}" data-flavor="${f.replace(/"/g,"&quot;")}">${fmtQty(current[f]||0)}</button></div>`).join("");
   $$(".qty-button").forEach(b=>b.onclick=()=>openPicker(b.dataset.flavor));
@@ -148,10 +149,23 @@ function closePicker(){$("#pickerBackdrop").classList.remove("open");pickerFlavo
 function setQty(n){if(!pickerFlavor)return;current[pickerFlavor]=n;dirty=true;completed=false;render();setCompletionUI();closePicker()}
 $("#zeroBtn").onclick=()=>setQty(0);$("#pickerClose").onclick=closePicker;$("#pickerBackdrop").onclick=e=>{if(e.target===$("#pickerBackdrop"))closePicker()};
 $("#date").onchange=loadProduction;
+function renderMatrix(rows){
+  const dates=last7Dates(),valueMap=new Map();
+  (rows||[]).forEach(r=>{if(r.flavor!==MARKER)valueMap.set(`${r.production_date}||${r.flavor}`,Number(r.containers)||0)});
+  const dayTotals=dates.map(d=>FLAVORS.reduce((s,f)=>s+(valueMap.get(`${d}||${f}`)||0),0));
+  const grandTotal=dayTotals.reduce((a,b)=>a+b,0);
+  const body=FLAVORS.map(f=>{
+    const vals=dates.map(d=>valueMap.get(`${d}||${f}`)||0),sum=vals.reduce((a,b)=>a+b,0);
+    return `<tr><th class="flavor-cell">${f}</th>${vals.map(v=>`<td class="${v>0?"value":"zero"}">${v>0?fmtQty(v):"–"}</td>`).join("")}<td class="sum-col">${sum>0?fmtQty(sum):"–"}</td></tr>`;
+  }).join("");
+  $("#matrixWrap").innerHTML=`<table class="matrix"><thead><tr><th class="flavor-head">Eissorte</th>${dates.map(d=>`<th>${matrixDate(d)}</th>`).join("")}<th class="sum-col">7 Tage</th></tr></thead><tbody>${body}</tbody><tfoot><tr><th class="flavor-cell">Gesamt</th>${dayTotals.map(v=>`<td>${v>0?fmtQty(v):"–"}</td>`).join("")}<td class="sum-col">${fmtQty(grandTotal)}</td></tr></tfoot></table>`;
+  $("#matrixSummary").textContent=`${fmtQty(grandTotal)} Behälter · ${fmtKg(grandTotal*KG)} kg in den letzten 7 Tagen`;
+}
 async function loadDays(){
-  $("#daysStatus").textContent="Lade Produktionshistorie …";$("#daysList").innerHTML="";
+  $("#daysStatus").textContent="Lade Produktionshistorie …";$("#daysStatus").className="small";$("#daysList").innerHTML="";$("#matrixSummary").textContent="Lade …";$("#matrixWrap").innerHTML="";
   try{
     const rows=await api("production_entries?select=production_date,flavor,containers,updated_at&order=production_date.desc&limit=5000");
+    renderMatrix(rows||[]);
     const dates=[...new Set((rows||[]).map(r=>r.production_date))].sort().reverse().slice(0,30);
     $("#daysStatus").textContent=dates.length?"":"Keine Produktionsdaten.";
     $("#daysList").innerHTML=dates.map(d=>{
@@ -159,20 +173,12 @@ async function loadDays(){
       const sum=prod.reduce((s,r)=>s+Number(r.containers||0),0),status=marker&&Number(marker.containers)===1;
       return `<details class="day"><summary><div><b>${displayDate(d)}</b><div class="day-meta">${fmtQty(sum)} Beh. · ${fmtKg(sum*KG)} kg · ${prod.length} Sorten</div></div><span class="status ${status?"done":""}">${status?"abgeschlossen":"offen"}</span></summary><table><thead><tr><th>Sorte</th><th>Behälter</th></tr></thead><tbody>${prod.map(r=>`<tr><td>${r.flavor}</td><td><b>${fmtQty(r.containers)}</b></td></tr>`).join("")||'<tr><td colspan="2">Keine Mengen</td></tr>'}</tbody></table></details>`;
     }).join("");
-  }catch(e){$("#daysStatus").textContent="Datenbankfehler.";$("#daysStatus").className="err";console.error(e)}
+  }catch(e){$("#daysStatus").textContent="Datenbankfehler.";$("#daysStatus").className="err";$("#matrixSummary").textContent="Matrix konnte nicht geladen werden.";console.error(e)}
 }
-async function history(){
-  $("#historyList").innerHTML='<div class="small">Lade …</div>';
-  try{
-    const f=encodeURIComponent($("#histFlavor").value),rows=await api(`production_entries?flavor=eq.${f}&containers=gt.0&select=production_date,containers&order=production_date.desc&limit=90`);
-    $("#historyList").innerHTML=(rows||[]).length?rows.map(r=>`<div class="hist"><b>${displayDate(r.production_date)}</b><div><b>${fmtQty(r.containers)}</b> Beh.<div class="small">${fmtKg(Number(r.containers)*KG)} kg</div></div></div>`).join(""):'<div class="small">Keine Daten</div>';
-  }catch(e){$("#historyList").innerHTML='<div class="err">Datenbankfehler.</div>';console.error(e)}
-}
-$("#histFlavor").onchange=history;
 $$(".tab").forEach(b=>b.onclick=()=>{
   $$(".tab").forEach(x=>x.classList.toggle("active",x===b));$$(".panel").forEach(p=>p.classList.toggle("active",p.id===b.dataset.tab));
   $("#footer").style.display=b.dataset.tab==="entry"?"block":"none";
-  if(b.dataset.tab==="days")loadDays();if(b.dataset.tab==="flavor")history();
+  if(b.dataset.tab==="days")loadDays();
 });
 window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
 loadProduction();
