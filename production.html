@@ -94,6 +94,18 @@ th{color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:upperca
 .number-btn.selected{background:var(--ink);color:#fff}
 .zero-btn{width:100%;min-height:48px;margin-top:10px;border:1px solid var(--ink);background:transparent;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
 .picker-note{margin-top:10px;font-size:11px;color:var(--muted);text-align:center}
+.ingredient-selector label{display:block;margin-bottom:7px;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.ingredient-head{padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.ingredient-head h3{margin:0 0 4px;font-size:24px;letter-spacing:-.02em;text-transform:none}
+.ingredient-section{margin-top:18px}
+.ingredient-section-label{margin-bottom:8px;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.ingredient-grid,.nutrition-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ingredient-value{min-width:0;padding:11px;background:rgba(255,255,255,.62);border:1px solid var(--line)}
+.ingredient-value small{display:block;margin-bottom:5px;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.ingredient-value b{display:block;font-size:14px;line-height:1.25;overflow-wrap:anywhere}
+.ingredient-value.highlight{background:var(--yellow);border-color:var(--ink)}
+.ingredient-source{margin-top:14px;padding-top:10px;border-top:1px solid var(--line)}
+@media(min-width:700px){.ingredient-grid,.nutrition-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:640px){
 header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:145px;font-size:9px}.tabs{margin-top:15px}
 .tab{padding-right:12px;margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}
@@ -111,6 +123,7 @@ header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:145px;fo
     <button class="tab active" data-tab="entry">Produktion</button>
     <button class="tab" data-tab="dashboard">Dashboard</button>
     <button class="tab" data-tab="productionHistory">Historie Produktion</button>
+    <button class="tab" data-tab="ingredients">Ingredients</button>
     <button class="tab" data-tab="history">Historie</button>
   </div>
 </header>
@@ -273,6 +286,53 @@ header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:145px;fo
       <div class="chart-title">Sorten im gewählten Zeitraum</div>
       <div id="prodHistFlavorBreakdown" class="breakdown"></div>
     </div>
+  </div>
+</section>
+
+<section id="ingredients" class="panel">
+  <div class="card">
+    <div class="ingredient-selector">
+      <label for="ingredientSelect">Zutat auswählen</label>
+      <select id="ingredientSelect"><option>Lade Zutaten …</option></select>
+    </div>
+    <div id="ingredientStatus" class="small" style="margin-top:10px"></div>
+  </div>
+  <div id="ingredientContent" class="card" style="display:none">
+    <div class="ingredient-head">
+      <h3 id="ingredientName">–</h3>
+      <div id="ingredientEnglish" class="small">–</div>
+    </div>
+
+    <div class="ingredient-section">
+      <div class="ingredient-section-label">Preis & Einkauf</div>
+      <div class="ingredient-grid">
+        <div class="ingredient-value"><small>Lieferant</small><b id="ingredientSupplier">–</b></div>
+        <div class="ingredient-value"><small>Preisdatum</small><b id="ingredientPriceDate">–</b></div>
+        <div class="ingredient-value"><small>Menge laut Liste</small><b id="ingredientAmount">–</b></div>
+        <div class="ingredient-value"><small>MwSt.</small><b id="ingredientVat">–</b></div>
+        <div class="ingredient-value"><small>Preis brutto</small><b id="ingredientGross">–</b></div>
+        <div class="ingredient-value"><small>Preis netto</small><b id="ingredientNet">–</b></div>
+        <div class="ingredient-value highlight"><small>Netto pro g</small><b id="ingredientPerGram">–</b></div>
+      </div>
+    </div>
+
+    <div class="ingredient-section">
+      <div class="ingredient-section-label">Nährwerte pro 100 g</div>
+      <div class="nutrition-grid">
+        <div class="ingredient-value"><small>Energie</small><b id="ingredientKcal">–</b></div>
+        <div class="ingredient-value"><small>Fett</small><b id="ingredientFat">–</b></div>
+        <div class="ingredient-value"><small>Gesättigte Fettsäuren</small><b id="ingredientSaturatedFat">–</b></div>
+        <div class="ingredient-value"><small>Ungesättigte Fettsäuren</small><b id="ingredientUnsaturatedFat">–</b></div>
+        <div class="ingredient-value"><small>Kohlenhydrate</small><b id="ingredientCarbs">–</b></div>
+        <div class="ingredient-value"><small>Davon Zucker</small><b id="ingredientSugar">–</b></div>
+        <div class="ingredient-value"><small>Ballaststoffe</small><b id="ingredientFiber">–</b></div>
+        <div class="ingredient-value"><small>Wasser</small><b id="ingredientWater">–</b></div>
+        <div class="ingredient-value"><small>Protein</small><b id="ingredientProtein">–</b></div>
+        <div class="ingredient-value"><small>Summe</small><b id="ingredientNutritionSum">–</b></div>
+      </div>
+    </div>
+
+    <div class="ingredient-source small">Quelle: <span id="ingredientSource">–</span> · Listenposition <span id="ingredientSourceRow">–</span></div>
   </div>
 </section>
 
@@ -662,6 +722,67 @@ async function loadProductionHistory(){
 }
 $('#prodHistRange').onchange=renderProductionHistory;$('#prodHistFlavor').onchange=renderProductionHistory;
 
+function ingredientNumber(value,maxDigits=2,unit=''){
+  if(value===null||value===undefined||value==='')return '–';
+  const n=Number(value);if(!Number.isFinite(n))return String(value);
+  return n.toLocaleString('de-DE',{maximumFractionDigits:maxDigits})+(unit?' '+unit:'');
+}
+function ingredientEuro(value,maxDigits=2){
+  if(value===null||value===undefined||value==='')return '–';
+  const n=Number(value);if(!Number.isFinite(n))return String(value);
+  return n.toLocaleString('de-DE',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:maxDigits});
+}
+function putIngredient(id,value){$('#'+id).textContent=value===null||value===undefined||value===''?'–':String(value)}
+let ingredientRows=[],ingredientsLoaded=false;
+function renderIngredient(){
+  const row=ingredientRows.find(r=>String(r.source_row)===$('#ingredientSelect').value);
+  if(!row){$('#ingredientContent').style.display='none';return}
+  $('#ingredientContent').style.display='block';
+  putIngredient('ingredientName',row.german_name);
+  putIngredient('ingredientEnglish',row.english_name);
+  putIngredient('ingredientSupplier',row.main_supplier);
+  putIngredient('ingredientPriceDate',row.price_date?displayDate(row.price_date):null);
+  putIngredient('ingredientAmount',ingredientNumber(row.amount,3));
+  putIngredient('ingredientVat',ingredientNumber(row.vat_percent,2,'%'));
+  putIngredient('ingredientGross',ingredientEuro(row.price_gross_eur,2));
+  putIngredient('ingredientNet',ingredientEuro(row.price_net_eur,2));
+  putIngredient('ingredientPerGram',row.price_net_per_g_eur===null||row.price_net_per_g_eur===undefined?'–':ingredientEuro(row.price_net_per_g_eur,6));
+  putIngredient('ingredientKcal',ingredientNumber(row.kcal_per_100g,2,'kcal'));
+  putIngredient('ingredientFat',ingredientNumber(row.total_fat_per_100g,2,'g'));
+  putIngredient('ingredientSaturatedFat',ingredientNumber(row.saturated_fat_per_100g,2,'g'));
+  putIngredient('ingredientUnsaturatedFat',ingredientNumber(row.unsaturated_fat_per_100g,2,'g'));
+  putIngredient('ingredientCarbs',ingredientNumber(row.total_carbohydrates_per_100g,2,'g'));
+  putIngredient('ingredientSugar',ingredientNumber(row.sugar_per_100g,2,'g'));
+  putIngredient('ingredientFiber',ingredientNumber(row.dietary_fiber_per_100g,2,'g'));
+  putIngredient('ingredientWater',ingredientNumber(row.water_per_100g,2,'g'));
+  putIngredient('ingredientProtein',ingredientNumber(row.proteins_per_100g,2,'g'));
+  putIngredient('ingredientNutritionSum',ingredientNumber(row.nutrition_sum,2,'g'));
+  putIngredient('ingredientSource',row.source_file);
+  putIngredient('ingredientSourceRow',row.source_row);
+}
+async function loadIngredients(){
+  if(ingredientsLoaded){renderIngredient();return}
+  const status=$('#ingredientStatus'),select=$('#ingredientSelect');
+  status.className='small';status.textContent='Lade Zutaten …';
+  try{
+    const fields='source_row,english_name,german_name,main_supplier,price_date,amount,price_gross_eur,price_net_eur,vat_percent,price_net_per_g_eur,kcal_per_100g,total_fat_per_100g,saturated_fat_per_100g,unsaturated_fat_per_100g,total_carbohydrates_per_100g,sugar_per_100g,dietary_fiber_per_100g,water_per_100g,proteins_per_100g,nutrition_sum,source_file';
+    ingredientRows=await api('ingredient_prices?select='+fields+'&order=german_name.asc&limit=500')||[];
+    select.innerHTML='';
+    ingredientRows.forEach(row=>{
+      const option=document.createElement('option');
+      option.value=String(row.source_row);
+      option.textContent=row.german_name+(row.english_name&&row.english_name!==row.german_name?' · '+row.english_name:'');
+      select.appendChild(option);
+    });
+    ingredientsLoaded=true;
+    status.textContent=ingredientRows.length?ingredientRows.length+' Zutaten':'Keine Zutaten vorhanden';
+    renderIngredient();
+  }catch(e){
+    ingredientsLoaded=false;status.className='err';status.textContent='Zutaten konnten nicht geladen werden.';select.innerHTML='<option>Keine Daten</option>';console.error(e)
+  }
+}
+$('#ingredientSelect').onchange=renderIngredient;
+
 async function history(){
   try{
     const f=encodeURIComponent($('#histFlavor').value);
@@ -676,6 +797,7 @@ $$('.tab').forEach(b=>b.onclick=()=>{
   $('#footer').style.display=b.dataset.tab==='entry'?'block':'none';
   if(b.dataset.tab==='dashboard')dashboard();
   if(b.dataset.tab==='productionHistory')loadProductionHistory();
+  if(b.dataset.tab==='ingredients')loadIngredients();
   if(b.dataset.tab==='history')history();
 });
 render();loadProduction();
