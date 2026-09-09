@@ -27,7 +27,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
 .picker-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:50;display:none;align-items:flex-end;justify-content:center;padding:14px}.picker-backdrop.open{display:flex}.picker{width:min(560px,100%);background:var(--mint);border:2px solid var(--ink);padding:16px;max-height:88vh;overflow:auto}.picker-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px}.picker-title{font-size:18px;font-weight:900}.picker-sub{font-size:11px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.1em}.picker-close{width:44px;height:44px;border:1px solid var(--ink);background:transparent;font-size:24px}.number-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.number-btn{min-height:52px;border:1px solid var(--ink);background:#fff;font-size:18px;font-weight:850}.number-btn.selected{background:var(--ink);color:#fff}.zero-btn{width:100%;min-height:48px;margin-top:10px;border:1px solid var(--ink);background:transparent;font-weight:800;text-transform:uppercase}
 
 .recipe-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end}.recipe-head select{margin-top:8px}.recipe-source{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;text-align:right}
-.recipe-title{margin:0 0 4px;font-size:24px}.recipe-table td:nth-child(2),.recipe-table th:nth-child(2),.recipe-table td:nth-child(3),.recipe-table th:nth-child(3){text-align:right}.recipe-table td:first-child{font-weight:650}.recipe-table .addon{color:var(--orange)}.badge{display:inline-block;margin-left:6px;padding:2px 5px;background:#fff0c9;color:#71420d;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle}.steps{margin:0;padding-left:24px}.steps li{padding:0 0 13px 5px;line-height:1.45;font-size:14px}.steps li:last-child{padding-bottom:0}
+.recipe-title{margin:0 0 4px;font-size:24px}.recipe-table td:nth-child(2),.recipe-table th:nth-child(2),.recipe-table td:nth-child(3),.recipe-table th:nth-child(3){text-align:right}.recipe-table td:first-child{font-weight:650}.recipe-table .addon{color:var(--orange)}.badge{display:inline-block;margin-left:6px;padding:2px 5px;background:#fff0c9;color:#71420d;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle}.steps{margin:0;padding-left:24px}.steps li{padding:0 0 13px 5px;line-height:1.45;font-size:14px}.steps li:last-child{padding-bottom:0}.allergen-box{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#fff1c9;border:1px solid #8b5010;padding:12px 14px;margin:12px 0}.allergen-box b{font-size:11px;letter-spacing:.12em;text-transform:uppercase}.allergen-chip{display:inline-block;margin-left:6px;padding:3px 6px;background:#8b5010;color:#fff;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;vertical-align:middle}
 @media(max-width:640px){header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:145px;font-size:9px}.tab{margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}.row{grid-template-columns:minmax(0,1fr) 82px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 8px;font-size:10px}.picker-backdrop{padding:8px}.number-grid{gap:6px}.number-btn{min-height:50px}.card{padding:12px}.matrix-wrap{margin-left:-12px;margin-right:-12px;border-left:0;border-right:0}.matrix .flavor-head,.matrix .flavor-cell{min-width:148px;max-width:148px}}
 </style>
 </head>
@@ -199,7 +199,13 @@ const fmtGrams=n=>Number(n||0).toLocaleString("de-DE",{minimumFractionDigits:0,m
 const fmtPercent=n=>Number(n||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2});
 const fmtEur=n=>Number(n||0).toLocaleString("de-DE",{style:"currency",currency:"EUR",minimumFractionDigits:2,maximumFractionDigits:2});
 const fmtEurPerG=n=>Number(n||0).toLocaleString("de-DE",{style:"currency",currency:"EUR",minimumFractionDigits:4,maximumFractionDigits:4});
+const ALLERGEN_LABELS={nuts:"Nüsse",soy:"Soja",peanuts:"Erdnüsse",sesame:"Sesam",dairy:"Milch",gluten:"Gluten",lecitin:"Lecithin",alcohol:"Alkohol",coffein:"Koffein"};
 let recipesLoaded=false,recipeCatalog=[];
+function itemAllergens(item){
+  const raw=item.ingredient_prices&&item.ingredient_prices.allergens||"";
+  return String(raw).split(",").map(x=>x.trim().toLowerCase()).filter(Boolean);
+}
+function allergenLabel(value){return ALLERGEN_LABELS[value]||value.charAt(0).toUpperCase()+value.slice(1)}
 function textEl(tag,text,className=""){const el=document.createElement(tag);if(className)el.className=className;el.textContent=text;return el}
 function appendMetric(parent,label,value){
   const box=document.createElement("div");box.className="metric";
@@ -217,6 +223,12 @@ function renderRecipe(recipe,ingredients,steps){
   appendMetric(summary,"Wareneinsatz / g",pricingComplete?fmtEurPerG(totalCost/Number(recipe.final_weight_g)):"–");
   appendMetric(summary,"Wareneinsatz Rezept",pricingComplete?fmtEur(totalCost):"–");
   host.append(summary);
+  const allergens=[...new Set(ingredients.flatMap(itemAllergens))];
+  const allergenBox=document.createElement("div");allergenBox.className="allergen-box";
+  allergenBox.append(textEl("b","Allergene"));
+  if(allergens.length)allergens.forEach(value=>allergenBox.append(textEl("span",allergenLabel(value),"allergen-chip")));
+  else allergenBox.append(textEl("span","Keine Allergene hinterlegt","small"));
+  host.append(allergenBox);
 
   const ingredientCard=document.createElement("div");ingredientCard.className="card";
   ingredientCard.append(textEl("h3",recipe.name,"recipe-title"));
@@ -231,6 +243,7 @@ function renderRecipe(recipe,ingredients,steps){
     const tr=document.createElement("tr");
     const nameCell=textEl("td",item.ingredient_name,item.included_in_base?"":"addon");
     if(!item.included_in_base)nameCell.append(textEl("span","Zugabe","badge"));
+    itemAllergens(item).forEach(value=>nameCell.append(textEl("span",allergenLabel(value),"allergen-chip")));
     tr.append(nameCell,textEl("td",fmtGrams(item.amount_g)+" g"),textEl("td",item.share_of_base==null?"–":fmtPercent(Number(item.share_of_base)*100)+" %"));
     tbody.append(tr);
   });
@@ -249,7 +262,7 @@ async function loadRecipe(recipeKey){
   try{
     const key=encodeURIComponent(recipeKey);
     const [ingredients,steps]=await Promise.all([
-      api("recipe_ingredients?recipe_key=eq."+key+"&select=position,ingredient_name,amount_g,share_of_base,included_in_base,ingredient_prices(price_net_per_g_eur)&order=position.asc"),
+      api("recipe_ingredients?recipe_key=eq."+key+"&select=position,ingredient_name,amount_g,share_of_base,included_in_base,ingredient_prices(price_net_per_g_eur,allergens)&order=position.asc"),
       api("recipe_steps?recipe_key=eq."+key+"&select=position,instruction&order=position.asc")
     ]);
     renderRecipe(recipe,ingredients||[],steps||[]);
