@@ -25,6 +25,9 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
 .section-title{margin:5px 0 2px;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .day{border-bottom:1px solid var(--line)}.day summary{list-style:none;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:14px 0;cursor:pointer}.day summary::-webkit-details-marker{display:none}.day summary:after{content:"+";font-size:24px}.day[open] summary:after{content:"−"}.day-meta{font-size:11px;color:var(--muted);margin-top:3px}.status{display:inline-block;padding:4px 7px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:#fff0c9;color:#8b5010}.status.done{background:#dcefe7;color:#155b47}
 .picker-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:50;display:none;align-items:flex-end;justify-content:center;padding:14px}.picker-backdrop.open{display:flex}.picker{width:min(560px,100%);background:var(--mint);border:2px solid var(--ink);padding:16px;max-height:88vh;overflow:auto}.picker-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px}.picker-title{font-size:18px;font-weight:900}.picker-sub{font-size:11px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.1em}.picker-close{width:44px;height:44px;border:1px solid var(--ink);background:transparent;font-size:24px}.number-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.number-btn{min-height:52px;border:1px solid var(--ink);background:#fff;font-size:18px;font-weight:850}.number-btn.selected{background:var(--ink);color:#fff}.zero-btn{width:100%;min-height:48px;margin-top:10px;border:1px solid var(--ink);background:transparent;font-weight:800;text-transform:uppercase}
+
+.recipe-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end}.recipe-head select{margin-top:8px}.recipe-source{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;text-align:right}
+.recipe-title{margin:0 0 4px;font-size:24px}.recipe-table td:nth-child(2),.recipe-table th:nth-child(2),.recipe-table td:nth-child(3),.recipe-table th:nth-child(3){text-align:right}.recipe-table td:first-child{font-weight:650}.recipe-table .addon{color:var(--orange)}.badge{display:inline-block;margin-left:6px;padding:2px 5px;background:#fff0c9;color:#71420d;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle}.steps{margin:0;padding-left:24px}.steps li{padding:0 0 13px 5px;line-height:1.45;font-size:14px}.steps li:last-child{padding-bottom:0}
 @media(max-width:640px){header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:145px;font-size:9px}.tab{margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}.row{grid-template-columns:minmax(0,1fr) 82px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 8px;font-size:10px}.picker-backdrop{padding:8px}.number-grid{gap:6px}.number-btn{min-height:50px}.card{padding:12px}.matrix-wrap{margin-left:-12px;margin-right:-12px;border-left:0;border-right:0}.matrix .flavor-head,.matrix .flavor-cell{min-width:148px;max-width:148px}}
 </style>
 </head>
@@ -35,6 +38,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
   <div class="tabs">
     <button class="tab active" data-tab="entry">Produktion</button>
     <button class="tab" data-tab="days">Produktionshistorie</button>
+    <button class="tab" data-tab="recipes">Rezepte</button>
   </div>
 </header>
 <main>
@@ -61,6 +65,21 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
     <div id="daysStatus" class="small">Lade …</div>
     <div id="daysList"></div>
   </div>
+</section>
+
+<section id="recipes" class="panel">
+  <div class="card">
+    <div class="recipe-head">
+      <div>
+        <h3 style="margin:0 0 4px">Rezepte</h3>
+        <div class="small">Rezept auswählen</div>
+        <select id="recipeSelect" disabled><option>Lade Rezepte …</option></select>
+      </div>
+      <div class="recipe-source">Quelle<br>Rezepte TriBeCa</div>
+    </div>
+    <div id="recipeStatus" class="small" style="margin-top:10px">Lade …</div>
+  </div>
+  <div id="recipeView"></div>
 </section>
 </main>
 </div>
@@ -175,10 +194,90 @@ async function loadDays(){
     }).join("");
   }catch(e){$("#daysStatus").textContent="Datenbankfehler.";$("#daysStatus").className="err";$("#matrixSummary").textContent="Matrix konnte nicht geladen werden.";console.error(e)}
 }
-$$(".tab").forEach(b=>b.onclick=()=>{
+
+const fmtGrams=n=>Number(n||0).toLocaleString("de-DE",{minimumFractionDigits:0,maximumFractionDigits:1});
+const fmtPercent=n=>Number(n||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2});
+let recipesLoaded=false,recipeCatalog=[];
+function textEl(tag,text,className=""){const el=document.createElement(tag);if(className)el.className=className;el.textContent=text;return el}
+function appendMetric(parent,label,value){
+  const box=document.createElement("div");box.className="metric";
+  box.append(textEl("small",label),textEl("b",value));parent.append(box);
+}
+function renderRecipe(recipe,ingredients,steps){
+  const host=$("#recipeView");host.replaceChildren();
+  const summary=document.createElement("div");summary.className="summary";
+  appendMetric(summary,"Grundmasse",fmtGrams(recipe.base_weight_g)+" g");
+  appendMetric(summary,"Endmenge",fmtGrams(recipe.final_weight_g)+" g");
+  appendMetric(summary,"Zutaten",String(ingredients.length));
+  host.append(summary);
+
+  const ingredientCard=document.createElement("div");ingredientCard.className="card";
+  ingredientCard.append(textEl("h3",recipe.name,"recipe-title"));
+  const source=textEl("div","Zutatenmenge für die vollständige Rezeptur · "+recipe.source_sheet,"small");
+  ingredientCard.append(source);
+  const table=document.createElement("table");table.className="recipe-table";
+  const thead=document.createElement("thead"),headRow=document.createElement("tr");
+  ["Zutat","Menge","Anteil"].forEach(label=>headRow.append(textEl("th",label)));
+  thead.append(headRow);table.append(thead);
+  const tbody=document.createElement("tbody");
+  ingredients.forEach(item=>{
+    const tr=document.createElement("tr");
+    const nameCell=textEl("td",item.ingredient_name,item.included_in_base?"":"addon");
+    if(!item.included_in_base)nameCell.append(textEl("span","Zugabe","badge"));
+    tr.append(nameCell,textEl("td",fmtGrams(item.amount_g)+" g"),textEl("td",item.share_of_base==null?"–":fmtPercent(Number(item.share_of_base)*100)+" %"));
+    tbody.append(tr);
+  });
+  table.append(tbody);ingredientCard.append(table);host.append(ingredientCard);
+
+  const stepCard=document.createElement("div");stepCard.className="card";
+  stepCard.append(textEl("h3","Arbeitsschritte"));
+  const list=document.createElement("ol");list.className="steps";
+  steps.forEach(step=>list.append(textEl("li",step.instruction)));
+  stepCard.append(list);host.append(stepCard);
+}
+async function loadRecipe(recipeKey){
+  const recipe=recipeCatalog.find(r=>r.recipe_key===recipeKey);
+  if(!recipe)return;
+  $("#recipeStatus").textContent="Lade "+recipe.name+" …";$("#recipeView").replaceChildren();
+  try{
+    const key=encodeURIComponent(recipeKey);
+    const [ingredients,steps]=await Promise.all([
+      api("recipe_ingredients?recipe_key=eq."+key+"&select=position,ingredient_name,amount_g,share_of_base,included_in_base&order=position.asc"),
+      api("recipe_steps?recipe_key=eq."+key+"&select=position,instruction&order=position.asc")
+    ]);
+    renderRecipe(recipe,ingredients||[],steps||[]);
+    $("#recipeStatus").textContent=recipe.name+" · "+fmtGrams(recipe.final_weight_g)+" g Endmenge";
+  }catch(e){
+    $("#recipeStatus").textContent="Rezept konnte nicht geladen werden.";
+    $("#recipeStatus").className="err";console.error(e);
+  }
+}
+async function loadRecipes(){
+  if(recipesLoaded)return;
+  const select=$("#recipeSelect");$("#recipeStatus").textContent="Lade Rezepte …";
+  try{
+    recipeCatalog=await api("recipes?select=recipe_key,name,base_weight_g,final_weight_g,source_sheet&order=name.asc")||[];
+    select.replaceChildren();
+    if(!recipeCatalog.length){
+      select.append(new Option("Keine Rezepte vorhanden",""));select.disabled=true;
+      $("#recipeStatus").textContent="Keine Rezepte vorhanden.";return;
+    }
+    recipeCatalog.forEach(recipe=>select.append(new Option(recipe.name,recipe.recipe_key)));
+    select.disabled=false;recipesLoaded=true;
+    select.onchange=()=>loadRecipe(select.value);
+    await loadRecipe(select.value);
+  }catch(e){
+    select.replaceChildren(new Option("Laden fehlgeschlagen",""));select.disabled=true;
+    $("#recipeStatus").textContent="Rezepte konnten nicht geladen werden.";
+    $("#recipeStatus").className="err";console.error(e);
+  }
+}
+
+$(".tab").forEach(b=>b.onclick=()=>{
   $$(".tab").forEach(x=>x.classList.toggle("active",x===b));$$(".panel").forEach(p=>p.classList.toggle("active",p.id===b.dataset.tab));
   $("#footer").style.display=b.dataset.tab==="entry"?"block":"none";
   if(b.dataset.tab==="days")loadDays();
+  if(b.dataset.tab==="recipes")loadRecipes();
 });
 window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
 loadProduction();
