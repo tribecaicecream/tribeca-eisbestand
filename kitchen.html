@@ -197,6 +197,8 @@ async function loadDays(){
 
 const fmtGrams=n=>Number(n||0).toLocaleString("de-DE",{minimumFractionDigits:0,maximumFractionDigits:1});
 const fmtPercent=n=>Number(n||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtEur=n=>Number(n||0).toLocaleString("de-DE",{style:"currency",currency:"EUR",minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtEurPerG=n=>Number(n||0).toLocaleString("de-DE",{style:"currency",currency:"EUR",minimumFractionDigits:4,maximumFractionDigits:4});
 let recipesLoaded=false,recipeCatalog=[];
 function textEl(tag,text,className=""){const el=document.createElement(tag);if(className)el.className=className;el.textContent=text;return el}
 function appendMetric(parent,label,value){
@@ -209,6 +211,11 @@ function renderRecipe(recipe,ingredients,steps){
   appendMetric(summary,"Grundmasse",fmtGrams(recipe.base_weight_g)+" g");
   appendMetric(summary,"Endmenge",fmtGrams(recipe.final_weight_g)+" g");
   appendMetric(summary,"Zutaten",String(ingredients.length));
+  const pricedIngredients=ingredients.filter(item=>item.ingredient_prices&&item.ingredient_prices.price_net_per_g_eur!=null);
+  const totalCost=pricedIngredients.reduce((sum,item)=>sum+Number(item.amount_g)*Number(item.ingredient_prices.price_net_per_g_eur),0);
+  const pricingComplete=pricedIngredients.length===ingredients.length;
+  appendMetric(summary,"Wareneinsatz / g",pricingComplete?fmtEurPerG(totalCost/Number(recipe.final_weight_g)):"–");
+  appendMetric(summary,"Wareneinsatz Rezept",pricingComplete?fmtEur(totalCost):"–");
   host.append(summary);
 
   const ingredientCard=document.createElement("div");ingredientCard.className="card";
@@ -242,7 +249,7 @@ async function loadRecipe(recipeKey){
   try{
     const key=encodeURIComponent(recipeKey);
     const [ingredients,steps]=await Promise.all([
-      api("recipe_ingredients?recipe_key=eq."+key+"&select=position,ingredient_name,amount_g,share_of_base,included_in_base&order=position.asc"),
+      api("recipe_ingredients?recipe_key=eq."+key+"&select=position,ingredient_name,amount_g,share_of_base,included_in_base,ingredient_prices(price_net_per_g_eur)&order=position.asc"),
       api("recipe_steps?recipe_key=eq."+key+"&select=position,instruction&order=position.asc")
     ]);
     renderRecipe(recipe,ingredients||[],steps||[]);
