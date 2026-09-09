@@ -273,7 +273,7 @@ async function loadRecipes(){
   }
 }
 
-$(".tab").forEach(b=>b.onclick=()=>{
+$$(".tab").forEach(b=>b.onclick=()=>{
   $$(".tab").forEach(x=>x.classList.toggle("active",x===b));$$(".panel").forEach(p=>p.classList.toggle("active",p.id===b.dataset.tab));
   $("#footer").style.display=b.dataset.tab==="entry"?"block":"none";
   if(b.dataset.tab==="days")loadDays();
