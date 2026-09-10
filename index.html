@@ -185,7 +185,7 @@ const SUPABASE_KEY="sb_publishable_222Ug8p-B-l43VI7pCZN5g_vpTDo7QQ";
 const ADMIN_FUNCTION=SUPABASE_URL+"/functions/v1/admin-stock-update";
 const FLAVORS=["Almond Orange","Apfel Zimt","Apple Crumble","Banana Pecan","Bienenstich","Black Sesame","Blue Coconut","Cashew Zimt","Cassis Sorbet","Chai Latte","Chocolate Peanut Swirl","Chocolate Whisky","Coconut Cacao Nibs","Crazy Peanut","Double Chocolate Hazelnut","Espresso Hazelnut","Grapefruit Sorbet","Hazelnut","Kalamansi Sorbet","Lemon Poppy Seed","Macadamia","Macadamia Mocca","Mango Passion Fruit","Matcha","Mint Chip","Mocca Brownie","Oat Milk Stracciatella","Peanut Choc Chip","Pecan Pie","Pineapple Sorbet","Pistachio","Pop Orange","Raffaello","Raspberry Basil","Raspberry Coconut","Raw Chocolate","Rum Raisin","Salted Caramell","Salty Maca","Sour Cherry","Strawberry Sorbet","Strawberry White Chocolate","Tiramisu","Tonka White Choc","Vanilla Bean","Walnut Maple","Yellow Peach Sorbet","Yuzu Cheesecake","Zitrone Minze","Zitrone Sorbet","Zitrone Zimt"];
 const ALLERGEN_LABELS={nuts:"Nüsse",soy:"Soja",peanuts:"Erdnüsse",sesame:"Sesam",dairy:"Milch",gluten:"Gluten",lecitin:"Lecithin",alcohol:"Alkohol",coffein:"Koffein"};
-const RECIPE_ALIASES={"Blue Coconut":"Blue Coconut Oil","Peanut Choc Chip":"Peanut Butter","Salted Caramell":"Salted Caramel","Strawberry White Chocolate":"Strawberry Cream","Tonka White Choc":"Tonka Bean","Vanilla Bean":"Vanilla"};
+const RECIPE_ALIASES={"Hazelnut":"Hazelnut Baobab Soy (weniger haselnussmus)","Macadamia":"Roasted Macadamia","Mint Chip":"Mint Choc Chip","Mocca Brownie":"Nougat Brownie","Pistachio":"Pistachio Lucuma","Strawberry White Chocolate":"Strawberry Cream","Tonka White Choc":"Tonka Bean","Zitrone Sorbet":"Zitronen Sorbet"};
 const EMPTY_CONTAINERS="Leere Behälter";
 const EXTRA_ITEMS=["Erdbeersosse","Sahne"];
 const NON_FLAVOR_ITEMS=[EMPTY_CONTAINERS,...EXTRA_ITEMS];
@@ -371,10 +371,10 @@ function sugarLabel(ingredientName){
 function chip(text,kind=''){
   const el=document.createElement('span');el.className='info-chip'+(kind?' '+kind:'');el.textContent=text;return el;
 }
-function valuesCell(values,kind=''){
+function valuesCell(values,kind='',emptyText='Keine Angabe'){
   const cell=document.createElement('div'),wrap=document.createElement('div');wrap.className='allergen-values';
   if(values.length)values.forEach(value=>wrap.append(chip(value,kind)));
-  else{const empty=document.createElement('span');empty.className='no-info';empty.textContent='Keine Angabe';wrap.append(empty)}
+  else{const empty=document.createElement('span');empty.className='no-info';empty.textContent=emptyText;wrap.append(empty)}
   cell.append(wrap);return cell;
 }
 let allergenOverviewLoaded=false;
@@ -392,16 +392,25 @@ async function loadAllergenOverview(){
     const list=document.createElement('div');list.className='allergen-list';
     const head=document.createElement('div');head.className='allergen-row allergen-head';
     ['Eissorte','Allergene','Verwendeter Zucker'].forEach(label=>{const el=document.createElement('div');el.textContent=label;head.append(el)});list.append(head);
+    let matchedCount=0;
     FLAVORS.forEach(flavor=>{
-      const recipeName=RECIPE_ALIASES[flavor]||flavor,recipe=recipeByName.get(normalizeName(recipeName));
+      const exactRecipe=recipeByName.get(normalizeName(flavor));
+      const aliasName=RECIPE_ALIASES[flavor];
+      const recipe=exactRecipe||(aliasName?recipeByName.get(normalizeName(aliasName)):null);
+      if(recipe)matchedCount++;
       const items=recipe?ingredientsByRecipe.get(recipe.recipe_key)||[]:[];
       const allergens=[...new Set(items.flatMap(storedAllergens).map(value=>ALLERGEN_LABELS[value]||value.charAt(0).toUpperCase()+value.slice(1)))].sort((a,b)=>a.localeCompare(b,'de'));
       const sugars=[...new Set(items.map(item=>sugarLabel(item.ingredient_name)).filter(Boolean))];
       const row=document.createElement('div');row.className='allergen-row';
       const flavorCell=document.createElement('div');flavorCell.className='allergen-flavor';flavorCell.textContent=flavor;
-      row.append(flavorCell,valuesCell(allergens),valuesCell(sugars,'sugar'));list.append(row);
+      const allergenEmpty=recipe?'Keine Allergene hinterlegt':'Rezept fehlt';
+      const sugarEmpty=recipe?'Keine Zuckerart hinterlegt':'Rezept fehlt';
+      row.append(flavorCell,valuesCell(allergens,'',allergenEmpty),valuesCell(sugars,'sugar',sugarEmpty));list.append(row);
     });
-    host.append(list);status.textContent=`${FLAVORS.length} Sorten · Angaben aus den aktuell hinterlegten Rezepten`;allergenOverviewLoaded=true;
+    host.append(list);
+    const missingCount=FLAVORS.length-matchedCount;
+    status.textContent=`${FLAVORS.length} Sorten · ${matchedCount} mit Rezept · ${missingCount} ohne Rezept`;
+    allergenOverviewLoaded=true;
   }catch(e){status.textContent='Allergen- und Zuckerangaben konnten nicht geladen werden.';status.className='err';console.error(e)}
 }
 async function history(){try{const s=encodeURIComponent($('#histStore').value),f=encodeURIComponent($('#histFlavor').value);const rows=await api(`stock_entries?store=eq.${s}&flavor=eq.${f}&select=stock_date,containers&order=stock_date.desc&limit=90`);$('#historyList').innerHTML=rows.length?rows.map(r=>`<div class=hist><b>${r.stock_date}</b><div><b>${fmt(r.containers)}</b> Beh.<div class=small>${fmt(r.containers*KG)} kg</div></div></div>`).join(''):'<div class=small>Keine Daten</div>'}catch(e){$('#historyList').innerHTML='<div class="err">Datenbankfehler.</div>';console.error(e)}}
