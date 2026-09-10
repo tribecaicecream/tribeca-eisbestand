@@ -78,7 +78,16 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
 .inventory-matrix td:first-child{font-weight:650;white-space:nowrap}
 .inventory-matrix .total-col{font-weight:900;background:rgba(198,243,232,.34)}
 .inventory-matrix .matrix-total td{font-weight:900;border-top:2px solid var(--ink);background:rgba(198,243,232,.42)}
-@media(max-width:640px){header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:130px;text-align:right;font-size:9px}.tabs{margin-top:15px}.tab{padding-right:12px;margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.admin-lock{align-items:stretch;flex-direction:column}.admin-controls{width:100%}.admin-controls input{width:100%;min-width:0}.row{grid-template-columns:minmax(0,1fr) 44px 62px 44px;gap:5px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 8px;font-size:10px}.stock-table th:nth-child(2),.stock-table td:nth-child(2){display:none}.inventory-head{display:block}.inventory-actions{justify-content:flex-start;margin-top:12px}.inventory-actions .btn{flex:1}.inventory-matrix{min-width:670px}}
+.allergen-intro{margin:0 0 14px;line-height:1.45}
+.allergen-list{border-top:2px solid var(--ink)}
+.allergen-row{display:grid;grid-template-columns:minmax(170px,1.15fr) 1fr 1fr;gap:14px;padding:13px 4px;border-bottom:1px solid var(--line);align-items:start}
+.allergen-row.allergen-head{padding:9px 4px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.allergen-flavor{font-weight:800}
+.allergen-values{display:flex;gap:6px;flex-wrap:wrap}
+.info-chip{display:inline-block;border:1px solid var(--ink);background:#fff;padding:5px 7px;font-size:11px;font-weight:700;line-height:1.1}
+.info-chip.sugar{background:var(--yellow)}
+.no-info{font-size:12px;color:var(--muted)}
+@media(max-width:640px){header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:130px;text-align:right;font-size:9px}.tabs{margin-top:15px}.tab{padding-right:12px;margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.admin-lock{align-items:stretch;flex-direction:column}.admin-controls{width:100%}.admin-controls input{width:100%;min-width:0}.row{grid-template-columns:minmax(0,1fr) 44px 62px 44px;gap:5px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 8px;font-size:10px}.stock-table th:nth-child(2),.stock-table td:nth-child(2){display:none}.inventory-head{display:block}.inventory-actions{justify-content:flex-start;margin-top:12px}.inventory-actions .btn{flex:1}.inventory-matrix{min-width:670px}.allergen-row{grid-template-columns:1fr;gap:7px;padding:14px 2px}.allergen-row.allergen-head{display:none}.allergen-row>div:not(:first-child)::before{display:block;margin-bottom:5px;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.allergen-row>div:nth-child(2)::before{content:"Allergene"}.allergen-row>div:nth-child(3)::before{content:"Verwendeter Zucker"}}
 @media print{
   @page{size:A4 portrait;margin:7mm}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
@@ -118,6 +127,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
     <button class="tab active" data-tab="entry">Bestand</button>
     <button class="tab" data-tab="dashboard">Dashboard</button>
     <button class="tab" data-tab="history">Historie</button>
+    <button class="tab" data-tab="allergens">Allergene</button>
   </div>
 </header>
 <main>
@@ -153,6 +163,14 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
   <div class="toolbar"><select id="histStore"></select><select id="histFlavor"></select></div>
   <div class="card"><h3 style="margin-top:0">Historie</h3><div id="historyList"></div></div>
 </section>
+<section id="allergens" class="panel">
+  <div class="card">
+    <h3 style="margin-top:0">Allergene &amp; Zuckerarten</h3>
+    <p class="small allergen-intro">Alle Eissorten aus dem Bestand. Die Angaben werden aus den hinterlegten Rezepten und Zutaten geladen.</p>
+    <div id="allergenStatus" class="small">Lade Angaben …</div>
+    <div id="allergenList"></div>
+  </div>
+</section>
 </main>
 </div>
 <footer id="footer"><div class="foot">
@@ -166,6 +184,8 @@ const SUPABASE_URL="https://pvnpykkqavomiwofacyz.supabase.co";
 const SUPABASE_KEY="sb_publishable_222Ug8p-B-l43VI7pCZN5g_vpTDo7QQ";
 const ADMIN_FUNCTION=SUPABASE_URL+"/functions/v1/admin-stock-update";
 const FLAVORS=["Almond Orange","Apfel Zimt","Apple Crumble","Banana Pecan","Bienenstich","Black Sesame","Blue Coconut","Cashew Zimt","Cassis Sorbet","Chai Latte","Chocolate Peanut Swirl","Chocolate Whisky","Coconut Cacao Nibs","Crazy Peanut","Double Chocolate Hazelnut","Espresso Hazelnut","Grapefruit Sorbet","Hazelnut","Kalamansi Sorbet","Lemon Poppy Seed","Macadamia","Macadamia Mocca","Mango Passion Fruit","Matcha","Mint Chip","Mocca Brownie","Oat Milk Stracciatella","Peanut Choc Chip","Pecan Pie","Pineapple Sorbet","Pistachio","Pop Orange","Raffaello","Raspberry Basil","Raspberry Coconut","Raw Chocolate","Rum Raisin","Salted Caramell","Salty Maca","Sour Cherry","Strawberry Sorbet","Strawberry White Chocolate","Tiramisu","Tonka White Choc","Vanilla Bean","Walnut Maple","Yellow Peach Sorbet","Yuzu Cheesecake","Zitrone Minze","Zitrone Sorbet","Zitrone Zimt"];
+const ALLERGEN_LABELS={nuts:"Nüsse",soy:"Soja",peanuts:"Erdnüsse",sesame:"Sesam",dairy:"Milch",gluten:"Gluten",lecitin:"Lecithin",alcohol:"Alkohol",coffein:"Koffein"};
+const RECIPE_ALIASES={"Banana Pecan":"Banana","Blue Coconut":"Blue Coconut Oil","Peanut Choc Chip":"Peanut Butter","Salted Caramell":"Salted Caramel","Strawberry White Chocolate":"Strawberry Cream","Tonka White Choc":"Tonka Bean","Vanilla Bean":"Vanilla"};
 const EMPTY_CONTAINERS="Leere Behälter";
 const EXTRA_ITEMS=["Erdbeersosse","Sahne"];
 const NON_FLAVOR_ITEMS=[EMPTY_CONTAINERS,...EXTRA_ITEMS];
@@ -337,9 +357,56 @@ function openInventoryPrintPage(){
   w.document.close();
 }
 $('#printInventory').onclick=openInventoryPrintPage;
+function normalizeName(value){return String(value||'').trim().toLocaleLowerCase('de-DE').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ')}
+function nestedPrice(item){const value=item&&item.ingredient_prices;return Array.isArray(value)?value[0]:value}
+function storedAllergens(item){const raw=nestedPrice(item)?.allergens||'';return String(raw).split(',').map(x=>x.trim().toLowerCase()).filter(Boolean)}
+function sugarLabel(ingredientName){
+  const name=normalizeName(ingredientName);
+  if(name.includes('kokosblutenzucker'))return 'Kokosblütenzucker';
+  if(name.includes('rohrohrzucker')||name.includes('rohrzucker'))return 'Rohrohrzucker';
+  if(name.includes('glukose')||name.includes('glucose'))return 'Glukose';
+  if(name.includes('reissirup'))return 'Reissirup';
+  return '';
+}
+function chip(text,kind=''){
+  const el=document.createElement('span');el.className='info-chip'+(kind?' '+kind:'');el.textContent=text;return el;
+}
+function valuesCell(values,kind=''){
+  const cell=document.createElement('div'),wrap=document.createElement('div');wrap.className='allergen-values';
+  if(values.length)values.forEach(value=>wrap.append(chip(value,kind)));
+  else{const empty=document.createElement('span');empty.className='no-info';empty.textContent='Keine Angabe';wrap.append(empty)}
+  cell.append(wrap);return cell;
+}
+let allergenOverviewLoaded=false;
+async function loadAllergenOverview(){
+  if(allergenOverviewLoaded)return;
+  const status=$('#allergenStatus'),host=$('#allergenList');status.textContent='Lade Angaben …';host.replaceChildren();
+  try{
+    const [recipes,ingredients]=await Promise.all([
+      api('recipes?select=recipe_key,name&order=name.asc'),
+      api('recipe_ingredients?select=recipe_key,ingredient_name,ingredient_prices(allergens)&order=recipe_key.asc,position.asc')
+    ]);
+    const recipeByName=new Map((recipes||[]).map(recipe=>[normalizeName(recipe.name),recipe]));
+    const ingredientsByRecipe=new Map();
+    (ingredients||[]).forEach(item=>{const list=ingredientsByRecipe.get(item.recipe_key)||[];list.push(item);ingredientsByRecipe.set(item.recipe_key,list)});
+    const list=document.createElement('div');list.className='allergen-list';
+    const head=document.createElement('div');head.className='allergen-row allergen-head';
+    ['Eissorte','Allergene','Verwendeter Zucker'].forEach(label=>{const el=document.createElement('div');el.textContent=label;head.append(el)});list.append(head);
+    FLAVORS.forEach(flavor=>{
+      const recipeName=RECIPE_ALIASES[flavor]||flavor,recipe=recipeByName.get(normalizeName(recipeName));
+      const items=recipe?ingredientsByRecipe.get(recipe.recipe_key)||[]:[];
+      const allergens=[...new Set(items.flatMap(storedAllergens).map(value=>ALLERGEN_LABELS[value]||value.charAt(0).toUpperCase()+value.slice(1)))].sort((a,b)=>a.localeCompare(b,'de'));
+      const sugars=[...new Set(items.map(item=>sugarLabel(item.ingredient_name)).filter(Boolean))];
+      const row=document.createElement('div');row.className='allergen-row';
+      const flavorCell=document.createElement('div');flavorCell.className='allergen-flavor';flavorCell.textContent=flavor;
+      row.append(flavorCell,valuesCell(allergens),valuesCell(sugars,'sugar'));list.append(row);
+    });
+    host.append(list);status.textContent=`${FLAVORS.length} Sorten · Angaben aus den aktuell hinterlegten Rezepten`;allergenOverviewLoaded=true;
+  }catch(e){status.textContent='Allergen- und Zuckerangaben konnten nicht geladen werden.';status.className='err';console.error(e)}
+}
 async function history(){try{const s=encodeURIComponent($('#histStore').value),f=encodeURIComponent($('#histFlavor').value);const rows=await api(`stock_entries?store=eq.${s}&flavor=eq.${f}&select=stock_date,containers&order=stock_date.desc&limit=90`);$('#historyList').innerHTML=rows.length?rows.map(r=>`<div class=hist><b>${r.stock_date}</b><div><b>${fmt(r.containers)}</b> Beh.<div class=small>${fmt(r.containers*KG)} kg</div></div></div>`).join(''):'<div class=small>Keine Daten</div>'}catch(e){$('#historyList').innerHTML='<div class="err">Datenbankfehler.</div>';console.error(e)}}
 $('#histStore').onchange=history;$('#histFlavor').onchange=history;
-$$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.panel').forEach(x=>x.classList.remove('active'));$('#'+b.dataset.tab).classList.add('active');$('#footer').style.display=b.dataset.tab==='entry'?'block':'none';if(b.dataset.tab==='dashboard')dashboard();if(b.dataset.tab==='history')history()});
+$$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.panel').forEach(x=>x.classList.remove('active'));$('#'+b.dataset.tab).classList.add('active');$('#footer').style.display=b.dataset.tab==='entry'?'block':'none';if(b.dataset.tab==='dashboard')dashboard();if(b.dataset.tab==='history')history();if(b.dataset.tab==='allergens')loadAllergenOverview()});
 render();loadStock();
 </script>
 </body>
