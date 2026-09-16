@@ -550,7 +550,7 @@ function renderWorkSchedule(){
   $('#workScheduleTable').innerHTML='<div class="schedule-scroll"><table class="schedule-table"><thead><tr><th>Team</th>'+head+'<th>Std.</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
   workScheduleRendered=true;
 }
-$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.panel').forEach(x=>x.classList.remove('active'));$('#'+b.dataset.tab).classList.add('active');$('#footer').style.display=b.dataset.tab==='entry'?'block':'none';if(b.dataset.tab==='display')loadDisplay();if(b.dataset.tab==='dashboard')dashboard();if(b.dataset.tab==='history')history();if(b.dataset.tab==='allergens')loadAllergenOverview();if(b.dataset.tab==='workSchedule')renderWorkSchedule()});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.panel').forEach(x=>x.classList.remove('active'));$('#'+b.dataset.tab).classList.add('active');$('#footer').style.display=b.dataset.tab==='entry'?'block':'none';if(b.dataset.tab==='display')loadDisplay();if(b.dataset.tab==='dashboard')dashboard();if(b.dataset.tab==='history')history();if(b.dataset.tab==='allergens')loadAllergenOverview();if(b.dataset.tab==='workSchedule')renderWorkSchedule()});
 render();loadStock();
 </script>
 </body>
