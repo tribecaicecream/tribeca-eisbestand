@@ -106,6 +106,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
 
 .schedule-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
 .schedule-head h3{margin:0 0 5px}
+.schedule-picker{margin:10px 0 0;min-width:250px;border:1px solid var(--ink);background:#fff;padding:9px 10px;font-size:13px;font-weight:700}
 .schedule-total{min-width:118px;text-align:center;background:var(--yellow);border:1px solid var(--ink);padding:10px 12px}
 .schedule-total b{display:block;font-size:21px;line-height:1}
 .schedule-total small{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
@@ -127,8 +128,9 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
 .shift .shift-time{display:block;margin-top:4px;font-size:11px;font-weight:700;white-space:nowrap}
 .shift.pb{background:#f1e8f5;border-color:#d8c3e2}.shift.xb{background:#fff0ed;border-color:#efc8c1;color:#8c2018}.shift.fh{background:#e8f5fb;border-color:#c6e1ef;color:#275f88}
 .shift.off{color:#8a918e;font-size:11px;padding-top:12px}.shift.note{background:#fff8d6;border-color:#eadc94;color:#6e5b13;font-size:11px;font-weight:800;padding-top:11px}
+.schedule-info{margin:0 0 13px;padding:8px 10px;border-left:3px solid var(--ink);background:#f4f7f6}
 .schedule-source{margin-top:10px}
-@media(max-width:640px){header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:130px;text-align:right;font-size:9px}.tabs{margin-top:15px}.tab{padding-right:12px;margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.admin-lock{align-items:stretch;flex-direction:column}.admin-controls{width:100%}.admin-controls input{width:100%;min-width:0}.row{grid-template-columns:minmax(0,1fr) 44px 62px 44px;gap:5px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 8px;font-size:10px}.stock-table th:nth-child(2),.stock-table td:nth-child(2){display:none}.inventory-head{display:block}.inventory-actions{justify-content:flex-start;margin-top:12px}.inventory-actions .btn{flex:1}.inventory-matrix{min-width:670px}.allergen-row{grid-template-columns:1fr;gap:7px;padding:14px 2px}.allergen-row.allergen-head{display:none}.allergen-row>div:not(:first-child)::before{display:block;margin-bottom:5px;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.allergen-row>div:nth-child(2)::before{content:"Allergene"}.allergen-row>div:nth-child(3)::before{content:"Verwendeter Zucker"}.display-grid{grid-template-columns:1fr}.display-head{align-items:center}.display-actions{align-items:stretch;flex-direction:column}.display-buttons{width:100%;display:grid;grid-template-columns:1fr}.display-actions .btn{width:100%}}
+@media(max-width:640px){header{padding:15px 13px 12px}.wordmark{font-size:23px}.cloud{max-width:130px;text-align:right;font-size:9px}.tabs{margin-top:15px}.tab{padding-right:12px;margin-right:10px;font-size:11px}main{padding:12px}.summary{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.admin-lock{align-items:stretch;flex-direction:column}.admin-controls{width:100%}.admin-controls input{width:100%;min-width:0}.row{grid-template-columns:minmax(0,1fr) 44px 62px 44px;gap:5px}.foot{grid-template-columns:1fr 1fr}.foot-info{grid-column:1/-1}.btn{padding:12px 8px;font-size:10px}.stock-table th:nth-child(2),.stock-table td:nth-child(2){display:none}.inventory-head{display:block}.inventory-actions{justify-content:flex-start;margin-top:12px}.inventory-actions .btn{flex:1}.inventory-matrix{min-width:670px}.allergen-row{grid-template-columns:1fr;gap:7px;padding:14px 2px}.allergen-row.allergen-head{display:none}.allergen-row>div:not(:first-child)::before{display:block;margin-bottom:5px;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.allergen-row>div:nth-child(2)::before{content:"Allergene"}.allergen-row>div:nth-child(3)::before{content:"Verwendeter Zucker"}.display-grid{grid-template-columns:1fr}.display-head{align-items:center}.display-actions{align-items:stretch;flex-direction:column}.display-buttons{width:100%;display:grid;grid-template-columns:1fr}.display-actions .btn{width:100%}.schedule-head{display:block}.schedule-picker{width:100%;min-width:0}.schedule-total{margin-top:12px;width:100%}}
 @media print{
   @page{size:A4 portrait;margin:7mm}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
@@ -236,16 +238,17 @@ table{width:100%;border-collapse:collapse}th,td{padding:9px 5px;border-bottom:1p
 <section id="workSchedule" class="panel">
   <div class="card">
     <div class="schedule-head">
-      <div><h3>Work Schedule</h3><div class="small">Dienstplan · 21.–27. September 2026</div></div>
-      <div class="schedule-total"><b>112,75</b><small>Gesamtstunden</small></div>
+      <div><h3>Work Schedule</h3><div id="schedulePeriod" class="small"></div><select id="scheduleWeek" class="schedule-picker" aria-label="Dienstplanwoche"></select></div>
+      <div class="schedule-total"><b id="scheduleTotal">0,00</b><small>Gesamtstunden</small></div>
     </div>
     <div class="schedule-legend">
       <span class="schedule-chip pb">Prenzlauer Berg</span>
       <span class="schedule-chip xb">Kreuzberg</span>
       <span class="schedule-chip fh">Friedrichshain</span>
     </div>
+    <div id="scheduleInfo" class="small schedule-info hidden"></div>
     <div id="workScheduleTable"></div>
-    <div class="small schedule-source">Quelle: DPL_21.09..pdf</div>
+    <div id="scheduleSource" class="small schedule-source"></div>
   </div>
 </section>
 </main>
@@ -509,30 +512,66 @@ $('#displayStore').onchange=loadDisplay;
 $('#copyPreviousDisplay').onclick=copyPreviousDisplay;
 $('#saveDisplay').onclick=saveDisplay;
 
-const WORK_SCHEDULE_DAYS=[
-  {day:'Montag',date:'21.09.26'},{day:'Dienstag',date:'22.09.26'},{day:'Mittwoch',date:'23.09.26'},
-  {day:'Donnerstag',date:'24.09.26'},{day:'Freitag',date:'25.09.26'},{day:'Samstag',date:'26.09.26'},{day:'Sonntag',date:'27.09.26'}
-];
-const WORK_SCHEDULE=[
-  {name:'Maxine',days:['frei','frei','frei','frei','frei','frei','frei'],total:'–'},
-  {name:'Maja',days:['','','','','','',''],total:'–'},
-  {name:'Sanem',days:['frei','frei','','x-berg|14:45–21:30','p-berg|12:30–18:00','x-berg|12:45–17:00','x-berg|12:45–18:00'],total:'21,75'},
-  {name:'Xochilth',days:['','f-hain|18:00–22:30','f-hain|17:00–22:30','','f-hain|17:00–22:30','frei','f-hain|14:30–22:30'],total:'23,50'},
-  {name:'Merle',days:['p-berg|12:30–18:00','p-berg|12:30–18:00','','','','p-berg|11:30–18:00','p-berg|11:30–18:00'],total:'24,00'},
-  {name:'Maria',days:['x-berg|14:45–21:30','x-berg|12:45–18:00','x-berg|12:45–18:00','','','x-berg|17:00–22:30','frei'],total:'22,75'},
-  {name:'Jana',days:['frei','frei','f-hain|12:30–17:00','frei','frei','','f-hain|11:30–18:00'],total:'11,00'},
-  {name:'Maya',days:['frei','frei','x-berg|18:00–22:30','','x-berg|12:45–18:00','frei','frei'],total:'9,75'},
-  {name:'Greta',days:['frei','frei','frei','frei','frei','frei','frei'],total:'–'},
-  {name:'Line',days:['','note:spät','frei','note:spät','p-berg|18:00–22:30','frei','p-berg|18:00–22:30'],total:'9,00'},
-  {name:'Helene',days:['f-hain|18:00–22:30','note:ab 15:00','note:ab 16:30','note:ab 16:30','frei','f-hain|18:00–22:30','f-hain|18:00–22:30'],total:'13,50'},
-  {name:'Tess',days:['','x-berg|18:00–22:30','','','','p-berg|14:30–22:30',''],total:'12,50'},
-  {name:'Franzi',days:['frei','frei','frei','frei','x-berg|18:00–22:30','','x-berg|18:00–22:30'],total:'9,00'},
-  {name:'Emilia',days:['','','','f-hain|12:30–17:00','f-hain|12:30–17:00','frei','frei'],total:'9,00'},
-  {name:'Luisa',days:['frei','frei','frei','f-hain|17:00–22:30','frei','f-hain|11:30–18:00','frei'],total:'12,00'},
-  {name:'Gwendolin',days:['frei','frei','frei','frei','frei','frei','p-berg|14:30–22:30'],total:'8,00'},
-  {name:'Ziva',days:['f-hain|12:30–18:00','p-berg|18:00–22:30','p-berg|18:00–22:30','frei','frei','frei','frei'],total:'14,50'},
-  {name:'Lavinia',days:['frei','frei','frei','p-berg|18:00–22:30','','p-berg|18:00–22:30','frei'],total:'9,00'},
-  {name:'Lilli',days:['p-berg|18:00–22:30','f-hain|12:30–18:00','p-berg|12:30–18:00','p-berg|12:30–18:00','','f-hain|14:30–22:30',''],total:'29,00'}
+const WORK_SCHEDULES=[
+  {
+    id:'2026-09-14',start:'2026-09-14',end:'2026-09-20',label:'14.–20. September 2026',total:'239,25',source:'DPL_14.09. 2.pdf',
+    info:'Öffnungszeiten Mo, Do und Fr: Kreuzberg 15–21 Uhr · Prenzlauer Berg / Friedrichshain 13–22 Uhr',
+    days:[
+      {day:'Montag',date:'14.09.26'},{day:'Dienstag',date:'15.09.26'},{day:'Mittwoch',date:'16.09.26'},
+      {day:'Donnerstag',date:'17.09.26'},{day:'Freitag',date:'18.09.26'},{day:'Samstag',date:'19.09.26'},{day:'Sonntag',date:'20.09.26'}
+    ],
+    people:[
+      {name:'Maxine',days:['','frei','frei','frei','frei','frei','frei'],total:'–'},
+      {name:'Maja',days:['frei','','frei','frei','frei','f-hain|11:30–18:00',''],total:'6,50'},
+      {name:'Sanem',days:['frei','frei','frei','frei','frei','frei','frei'],total:'–'},
+      {name:'Xochilth',days:['f-hain|12:30–17:00','frei','f-hain|11:30–17:00','frei','f-hain|12:30–18:00','f-hain|18:00–22:30','f-hain|14:30–22:30'],total:'28,00'},
+      {name:'Merle',days:['frei','f-hain|11:30–17:00','p-berg|11:30–17:00','p-berg|12:30–18:00','frei','frei','frei'],total:'16,50'},
+      {name:'Maria',days:['f-hain|17:00–22:30','','frei','frei','x-berg|14:45–21:30','x-berg|17:00–22:30','x-berg|17:00–22:30'],total:'23,25'},
+      {name:'Jana',days:['frei','frei','frei','f-hain|12:30–18:00','','frei','f-hain|11:30–18:00'],total:'12,00'},
+      {name:'Sadie',days:['frei','p-berg|11:30–17:00','frei','frei','frei','frei','frei'],total:'5,50'},
+      {name:'Maya',days:['frei','frei','x-berg|18:00–22:30','','frei','frei','frei'],total:'4,50'},
+      {name:'Greta',days:['frei','frei','','x-berg|14:45–21:30','','frei','p-berg|18:00–22:30'],total:'11,25'},
+      {name:'Lucia',days:['frei','f-hain|17:00–22:30','frei','frei','frei','frei','frei'],total:'5,50'},
+      {name:'Line',days:['frei','frei','note:ab 18:00','note:ab 18:00','frei','p-berg|11:30–18:00','frei'],total:'6,50'},
+      {name:'Helene',days:['frei','note:ab 16:30','note:ab 16:30','f-hain|18:00–22:30','f-hain|18:00–22:30','frei','f-hain|18:00–22:30'],total:'13,50'},
+      {name:'Tess',days:['','x-berg|12:45–18:00','x-berg|12:45–18:00','','','x-berg|12:45–17:00','x-berg|12:45–17:00'],total:'19,00'},
+      {name:'Franzi',days:['x-berg|14:45–21:30','frei','frei','frei','frei','frei','frei'],total:'6,75'},
+      {name:'Emilia',days:['frei','frei','frei','frei','frei','frei','frei'],total:'–'},
+      {name:'Luisa',days:['frei','frei','frei','frei','frei','frei','frei'],total:'–'},
+      {name:'Gwendolin',days:['p-berg|12:30–17:00','frei','frei','frei','p-berg|12:30–18:00','frei','frei'],total:'10,00'},
+      {name:'Ziva',days:['frei','p-berg|17:00–22:30','p-berg|17:00–22:30','frei','frei','p-berg|14:30–22:30','p-berg|14:30–22:30'],total:'27,00'},
+      {name:'Lavinia',days:['','','','p-berg|18:00–22:30','','p-berg|18:00–22:30',''],total:'9,00'},
+      {name:'Lilli',days:['p-berg|17:00–22:30','x-berg|18:00–22:30','f-hain|17:00–22:30','','p-berg|18:00–22:30','f-hain|14:30–22:30','p-berg|11:30–18:00'],total:'34,50'}
+    ]
+  },
+  {
+    id:'2026-09-21',start:'2026-09-21',end:'2026-09-27',label:'21.–27. September 2026',total:'112,75',source:'DPL_21.09..pdf',info:'',
+    days:[
+      {day:'Montag',date:'21.09.26'},{day:'Dienstag',date:'22.09.26'},{day:'Mittwoch',date:'23.09.26'},
+      {day:'Donnerstag',date:'24.09.26'},{day:'Freitag',date:'25.09.26'},{day:'Samstag',date:'26.09.26'},{day:'Sonntag',date:'27.09.26'}
+    ],
+    people:[
+      {name:'Maxine',days:['frei','frei','frei','frei','frei','frei','frei'],total:'–'},
+      {name:'Maja',days:['','','','','','',''],total:'–'},
+      {name:'Sanem',days:['frei','frei','','x-berg|14:45–21:30','p-berg|12:30–18:00','x-berg|12:45–17:00','x-berg|12:45–18:00'],total:'21,75'},
+      {name:'Xochilth',days:['','f-hain|18:00–22:30','f-hain|17:00–22:30','','f-hain|17:00–22:30','frei','f-hain|14:30–22:30'],total:'23,50'},
+      {name:'Merle',days:['p-berg|12:30–18:00','p-berg|12:30–18:00','','','','p-berg|11:30–18:00','p-berg|11:30–18:00'],total:'24,00'},
+      {name:'Maria',days:['x-berg|14:45–21:30','x-berg|12:45–18:00','x-berg|12:45–18:00','','','x-berg|17:00–22:30','frei'],total:'22,75'},
+      {name:'Jana',days:['frei','frei','f-hain|12:30–17:00','frei','frei','','f-hain|11:30–18:00'],total:'11,00'},
+      {name:'Maya',days:['frei','frei','x-berg|18:00–22:30','','x-berg|12:45–18:00','frei','frei'],total:'9,75'},
+      {name:'Greta',days:['frei','frei','frei','frei','frei','frei','frei'],total:'–'},
+      {name:'Line',days:['','note:spät','frei','note:spät','p-berg|18:00–22:30','frei','p-berg|18:00–22:30'],total:'9,00'},
+      {name:'Helene',days:['f-hain|18:00–22:30','note:ab 15:00','note:ab 16:30','note:ab 16:30','frei','f-hain|18:00–22:30','f-hain|18:00–22:30'],total:'13,50'},
+      {name:'Tess',days:['','x-berg|18:00–22:30','','','','p-berg|14:30–22:30',''],total:'12,50'},
+      {name:'Franzi',days:['frei','frei','frei','frei','x-berg|18:00–22:30','','x-berg|18:00–22:30'],total:'9,00'},
+      {name:'Emilia',days:['','','','f-hain|12:30–17:00','f-hain|12:30–17:00','frei','frei'],total:'9,00'},
+      {name:'Luisa',days:['frei','frei','frei','f-hain|17:00–22:30','frei','f-hain|11:30–18:00','frei'],total:'12,00'},
+      {name:'Gwendolin',days:['frei','frei','frei','frei','frei','frei','p-berg|14:30–22:30'],total:'8,00'},
+      {name:'Ziva',days:['f-hain|12:30–18:00','p-berg|18:00–22:30','p-berg|18:00–22:30','frei','frei','frei','frei'],total:'14,50'},
+      {name:'Lavinia',days:['frei','frei','frei','p-berg|18:00–22:30','','p-berg|18:00–22:30','frei'],total:'9,00'},
+      {name:'Lilli',days:['p-berg|18:00–22:30','f-hain|12:30–18:00','p-berg|12:30–18:00','p-berg|12:30–18:00','','f-hain|14:30–22:30',''],total:'29,00'}
+    ]
+  }
 ];
 function scheduleCell(value){
   if(!value)return '<span class="shift off">–</span>';
@@ -542,13 +581,28 @@ function scheduleCell(value){
   const label=store==='p-berg'?'P-Berg':store==='x-berg'?'X-Berg':'F-Hain';
   return '<span class="shift '+kind+'"><span class="shift-store">'+label+'</span><span class="shift-time">'+time+'</span></span>';
 }
-let workScheduleRendered=false;
+let workScheduleReady=false;
+function currentScheduleId(){
+  const today=new Date().toISOString().slice(0,10);
+  const current=WORK_SCHEDULES.find(week=>today>=week.start&&today<=week.end);
+  return (current||WORK_SCHEDULES[WORK_SCHEDULES.length-1]).id;
+}
 function renderWorkSchedule(){
-  if(workScheduleRendered)return;
-  const head=WORK_SCHEDULE_DAYS.map(d=>'<th><span class="schedule-day">'+d.day+'</span><span class="schedule-date">'+d.date+'</span></th>').join('');
-  const rows=WORK_SCHEDULE.map(person=>'<tr><td>'+person.name+'</td>'+person.days.map(v=>'<td>'+scheduleCell(v)+'</td>').join('')+'<td><b>'+person.total+'</b></td></tr>').join('');
+  if(!workScheduleReady){
+    $('#scheduleWeek').innerHTML=WORK_SCHEDULES.map(week=>'<option value="'+week.id+'">'+week.label+'</option>').join('');
+    $('#scheduleWeek').value=currentScheduleId();
+    $('#scheduleWeek').onchange=renderWorkSchedule;
+    workScheduleReady=true;
+  }
+  const week=WORK_SCHEDULES.find(item=>item.id===$('#scheduleWeek').value)||WORK_SCHEDULES[0];
+  $('#schedulePeriod').textContent='Dienstplan · '+week.label;
+  $('#scheduleTotal').textContent=week.total;
+  $('#scheduleSource').textContent='Quelle: '+week.source;
+  $('#scheduleInfo').textContent=week.info;
+  $('#scheduleInfo').classList.toggle('hidden',!week.info);
+  const head=week.days.map(d=>'<th><span class="schedule-day">'+d.day+'</span><span class="schedule-date">'+d.date+'</span></th>').join('');
+  const rows=week.people.map(person=>'<tr><td>'+person.name+'</td>'+person.days.map(v=>'<td>'+scheduleCell(v)+'</td>').join('')+'<td><b>'+person.total+'</b></td></tr>').join('');
   $('#workScheduleTable').innerHTML='<div class="schedule-scroll"><table class="schedule-table"><thead><tr><th>Team</th>'+head+'<th>Std.</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
-  workScheduleRendered=true;
 }
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.panel').forEach(x=>x.classList.remove('active'));$('#'+b.dataset.tab).classList.add('active');$('#footer').style.display=b.dataset.tab==='entry'?'block':'none';if(b.dataset.tab==='display')loadDisplay();if(b.dataset.tab==='dashboard')dashboard();if(b.dataset.tab==='history')history();if(b.dataset.tab==='allergens')loadAllergenOverview();if(b.dataset.tab==='workSchedule')renderWorkSchedule()});
 render();loadStock();
